@@ -18,7 +18,7 @@ MainMenu::MainMenu(int resX, int resY) {
 	destRect.w = 0;
 	destRect.h = 0;
 
-	backgroundTexture = TextureManager::loadTexture("./assets/mainmenu_background.png");
+	backgroundTexture = TextureManager::loadTexture("../assets/mainmenu_background.png");
 	//selectionsTexture = TextureManager::loadTexture("assets/mainmenu_selections.png");
 	selectionsTexture = nullptr;
 }
