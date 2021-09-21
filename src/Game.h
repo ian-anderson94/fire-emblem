@@ -6,6 +6,10 @@
 
 #include "MainMenu.h"
 #include "Enums.h"
+#include "ResolutionManager.h"
+#include "TextManager.h"
+#include "AnimationManager.h"
+#include "InGame.h"
 //#include "EntityManager.h"
 
 #include "InputManager.h"
@@ -16,7 +20,7 @@ public:
 	Game();
 	virtual ~Game();
 
-	void init(const char* title, int windowXPos, int windowYPos, int windowWidth, int windowHeight, bool isFullscreen);
+	void init(const char* title, ResolutionManager* resolutionManager);
 	void update(double dt);
 	void render(SDL_Renderer* rend);
 	void handleEvents();
@@ -27,6 +31,8 @@ public:
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
 	static MainMenu* mainMenu;
+    static TextManager* textManager;
+    static InGame* inGame;
 	//static EntityManager* entityManager;
 
 	static int currScene;

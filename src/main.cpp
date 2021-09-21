@@ -12,12 +12,7 @@ int main(int argc, char* argv[]) {
 	game = new Game();
 	resolutionManager = new ResolutionManager(argc, argv);
 
-	game->init("GAME TITLE",
-			SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED,
-			resolutionManager->GetFlag(Enums::CommandLineFlag::CLF_xResolution),
-			resolutionManager->GetFlag(Enums::CommandLineFlag::CLF_yResolution),
-			resolutionManager->GetFlag(Enums::CommandLineFlag::CLF_Fullscreen));
+	game->init("GAME TITLE", resolutionManager);
 
 	while (InputManager::getInstance()->isRunning()) {
 		curr_t = SDL_GetTicks();

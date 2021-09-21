@@ -1,12 +1,12 @@
 #include "MainMenu.h"
 #include <iostream>
 
-MainMenu::MainMenu(int resX, int resY) {
+MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
 	resolutionX = resX;
 	resolutionY = resY;
 	screenCenterX = resX / 2;
 	screenCenterY = resY / 2;
-	currSelection = Enums::MainMenuSelection::MMS_MainMenu;
+	currSelection = Enums::MMS_GameStart;
 
 	srcRect.x = 0;
 	srcRect.y = 0;
@@ -18,7 +18,14 @@ MainMenu::MainMenu(int resX, int resY) {
 	destRect.w = 0;
 	destRect.h = 0;
 
-	backgroundTexture = TextureManager::loadTexture("../assets/mainmenu_background.png");
+    mainMenuTextSize = 60;
+
+    selectorVerticalOffset = 0;
+
+    MainMenu::textManager = textManager;
+
+	backgroundTexture = TextureManager::loadTexture("./assets/mainmenu_background.png");
+    selectorTexture = TextureManager::loadTexture("./assets/selector_arrow.png");
 	//selectionsTexture = TextureManager::loadTexture("assets/mainmenu_selections.png");
 	selectionsTexture = nullptr;
 }
@@ -29,25 +36,33 @@ MainMenu::~MainMenu() {
 
 void MainMenu::render(SDL_Renderer* rend){
 	renderBackground(rend);
-	//renderSelections(rend);
+	renderMenu(rend);
+    renderSelector(rend);
+}
+
+void MainMenu::update(double dt) {
+    // Nothing atm
 }
 
 int MainMenu::handleEvents(SDL_Event event) {
 	InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
 
-	int menuSelectionValue = Enums::MainMenuSelection::MMS_MainMenu;
+	int menuSelectionValue = Enums::MMS_MainMenu;
 
-	if (Globals::Contains(actions, Enums::Action::ACTION_Up)) {
+	if (Globals::Contains(actions, Enums::ACTION_Up)) {
 		currSelection--;
+        selectorVerticalOffset -= resolutionY / 8;
 		currSelection = boundCurrSelection();
 	}
-	else if (Globals::Contains(actions, Enums::Action::ACTION_Down)) {
+	else if (Globals::Contains(actions, Enums::ACTION_Down)) {
 		currSelection++;
+        selectorVerticalOffset += resolutionY / 8;
 		currSelection = boundCurrSelection();
 	}
-	else if (Globals::Contains(actions, Enums::Action::ACTION_Select)) {
+	else if (Globals::Contains(actions, Enums::ACTION_Select)) {
 		menuSelectionValue = currSelection;
+        std::cout << printf("curr selection %d\nmenu selection %d\n", currSelection, menuSelectionValue) << std::endl;
 	}
 
 	return menuSelectionValue;
@@ -63,68 +78,47 @@ void MainMenu::renderBackground(SDL_Renderer* rend) {
 	SDL_RenderCopy(rend, backgroundTexture, &srcRect, &destRect);
 }
 
-void MainMenu::renderSelections(SDL_Renderer* rend) {
-	renderGameStart(rend);
-	renderOptions(rend);
-	renderExit(rend);
+void MainMenu::renderMenu(SDL_Renderer* rend) {
+    SDL_Color white = { 255, 255, 255 };
+    const char* fontFile = "fonts/OpenSans-Regular.ttf";
+    const char* menuOptions[] = { "GAME START", "OPTIONS", "EXIT" };
+    int verticalOffset = 0, x = 0, y = 0, w = 0, h = 0;
+
+    for (int index = 0; index < (sizeof(menuOptions) / sizeof(menuOptions[0])); index++) {
+        w = resolutionX / 4;
+        h = resolutionY / 8;
+        x = screenCenterX - (w / 2);
+        y = screenCenterY - (h / 2) + verticalOffset;
+
+        verticalOffset += h;
+
+        textManager->LoadFontAndPrint(fontFile, mainMenuTextSize, menuOptions[index], white, x, y, w, h, rend);
+    }
 }
 
-void MainMenu::renderGameStart(SDL_Renderer* rend) {
-	srcRect.w = destRect.w = 200;
-	srcRect.h = destRect.h = 50;
+void MainMenu::renderSelector(SDL_Renderer* rend) {
+    int frame = AnimationManager::GetInstance()->GetFrameIndex(6);
+    int selectorSize = resolutionY / 8;
+    SDL_Rect src {0, 0, 0, 0};
+    SDL_Rect dest {0, 0, 0, 0};
 
-	srcRect.x = 0;
-	if (currSelection == Enums::MainMenuSelection::MMS_GameStart) {
-		srcRect.y = 50;
-	} else {
-		srcRect.y = 0;
-	}
+    src.x = frame * 64;
+    src.y = 0;
+    src.w = 64;
+    src.h = 64;
 
-	destRect.x = screenCenterX - 100;
-	destRect.y = screenCenterY - 25;
+    dest.w = dest.h = selectorSize;
+    dest.x = screenCenterX - (resolutionX / 8) - (selectorSize * 2);
+    dest.y = screenCenterY - (resolutionY / 16) + selectorVerticalOffset;
 
-	SDL_RenderCopy(rend, selectionsTexture, &srcRect, &destRect);
-}
-
-void MainMenu::renderOptions(SDL_Renderer* rend) {
-	srcRect.w = destRect.w = 200;
-	srcRect.h = destRect.h = 50;
-
-	srcRect.x = 0;
-	if (currSelection == Enums::MainMenuSelection::MMS_Options) {
-		srcRect.y = 150;
-	} else {
-		srcRect.y = 100;
-	}
-
-	destRect.x = screenCenterX - 100;
-	destRect.y = screenCenterY + 25;
-
-	SDL_RenderCopy(rend, selectionsTexture, &srcRect, &destRect);
-}
-
-void MainMenu::renderExit(SDL_Renderer* rend) {
-	srcRect.w = destRect.w = 200;
-	srcRect.h = destRect.h = 50;
-
-	srcRect.x = 0;
-	if (currSelection == Enums::MainMenuSelection::MMS_Exit) {
-		srcRect.y = 250;
-	} else {
-		srcRect.y = 200;
-	}
-
-	destRect.x = screenCenterX - 100;
-	destRect.y = screenCenterY + 75;
-
-	SDL_RenderCopy(rend, selectionsTexture, &srcRect, &destRect);
+    SDL_RenderCopy(rend, selectorTexture, &src, &dest);
 }
 
 int MainMenu::boundCurrSelection() {
-	if (currSelection > Enums::MainMenuSelection::MMS_Exit) {
-		return Enums::MainMenuSelection::MMS_GameStart;
-	} else if (currSelection < Enums::MainMenuSelection::MMS_GameStart) {
-		return Enums::MainMenuSelection::MMS_Exit;
+	if (currSelection > Enums::MMS_Exit) {
+		return Enums::MMS_GameStart;
+	} else if (currSelection < Enums::MMS_GameStart) {
+		return Enums::MMS_Exit;
 	} else {
 		return currSelection;
 	}

@@ -61,5 +61,14 @@ int ResolutionManager::GetFlag(Enums::CommandLineFlag flag) {
 	return flagValue;
 }
 
+void ResolutionManager::SetResolutionToFullscreenValues() {
+	SDL_DisplayMode mode;
+	SDL_GetCurrentDisplayMode(0, &mode);
+
+	flags[Enums::CommandLineFlag::CLF_xResolution] = to_string(mode.w);
+	flags[Enums::CommandLineFlag::CLF_yResolution] = to_string(mode.h);
+
+}
+
 
 
