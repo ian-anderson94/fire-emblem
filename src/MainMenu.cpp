@@ -62,7 +62,6 @@ int MainMenu::handleEvents(SDL_Event event) {
 	}
 	else if (Globals::Contains(actions, Enums::ACTION_Select)) {
 		menuSelectionValue = currSelection;
-        std::cout << printf("curr selection %d\nmenu selection %d\n", currSelection, menuSelectionValue) << std::endl;
 	}
 
 	return menuSelectionValue;

@@ -56,7 +56,7 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
 
     Game::textManager = new TextManager();
 	Game::mainMenu = new MainMenu(resolutionManager->GetFlag(Enums::CLF_xResolution), resolutionManager->GetFlag(Enums::CLF_yResolution), textManager);
-    Game::inGame = new InGame(resolutionManager->GetFlag(Enums::CLF_xResolution), resolutionManager->GetFlag(Enums::CLF_yResolution), 64);
+    Game::inGame = new InGame(resolutionManager->GetFlag(Enums::CLF_xResolution), resolutionManager->GetFlag(Enums::CLF_yResolution), tileSize);
 	//Game::entityManager = new EntityManager(tileSize, Globals::RESOLUTION_X, Globals::RESOLUTION_Y);
 }
 
@@ -107,6 +107,7 @@ void Game::handleEvents() {
 		break;
 	case Enums::SCENE_InGame:
 		//updateScene(entityManager->handleEvents(Game::event));
+        updateScene(inGame->HandleEvents(Game::event));
 		break;
 	case Enums::SCENE_PauseMenu:
 		break;

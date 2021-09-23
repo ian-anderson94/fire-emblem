@@ -2,7 +2,7 @@ OBJS = $(wildcard */*.cpp)
 CC = g++
 INCLUDE_PATHS = -I./include
 LIBRARY_PATHS = -L./lib
-COMPILER_FLAGS = -std=c++14 -Wall -O2
+COMPILER_FLAGS = -std=c++14 -Wall -O2 -g
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf
 OBJ_NAME = game
 

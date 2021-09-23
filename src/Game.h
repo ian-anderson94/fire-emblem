@@ -37,7 +37,7 @@ public:
 
 	static int currScene;
 
-	static const int tileSize = 32;
+	static const int tileSize = 64;
 
 private:
 	bool isRunning;

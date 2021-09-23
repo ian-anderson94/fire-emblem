@@ -20,6 +20,13 @@ public:
 		CLF_yResolution,
 	};
 
+    enum Direction {
+        DIR_Up,
+        DIR_Down,
+        DIR_Left,
+        DIR_Right
+    };
+
 	enum MainMenuSelection {
 		MMS_Start,
 		MMS_MainMenu,
