@@ -2,6 +2,7 @@
 #define SRC_INGAME_H_
 
 #include "GameCursor.h"
+#include "InformationPanel.h"
 #include "InputManager.h"
 #include "MapManager.h"
 #include "TextureManager.h"
@@ -11,14 +12,18 @@
 class InGame {
     public:
         InGame(int resX, int resY, int ts);
+        void Update(double dt);
         void Render(SDL_Renderer* rend);
         int HandleEvents(SDL_Event event);
+
+        void PrintPositions();
 
     private:
         int resolutionX;
         int resolutionY;
         int tileSize;
 
+        InformationPanel* infoPanel;
         GameCursor* cursor;
         ViewPort* viewPort;
         const char* backgroundTextureFile;

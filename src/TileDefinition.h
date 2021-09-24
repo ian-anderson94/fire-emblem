@@ -11,6 +11,7 @@ class TileDefinition {
     public:
         TileDefinition(string l, string s, string f, bool p, string a);
 
+        string GetLabel() { return label; };
         string GetSymbol() { return symbol; };
         string GetImageFile() { return imageFile; };
         bool GetPassable() { return passable; };

@@ -71,6 +71,7 @@ void Game::update(double dt) {
             mainMenu->update(dt);
 			break;
 		case Enums::SCENE_InGame:
+            inGame->Update(dt);
 			//Game::entityManager->update(dt);
 			break;
 		case Enums::SCENE_PauseMenu:

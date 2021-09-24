@@ -8,6 +8,18 @@ Map::Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> t
     tiles = ParseTilesFromLayout();
 }
 
+Tile* Map::GetTile(int xPos, int yPos) {
+    for (auto const& tile : tiles) {
+        Tile::Position tilePos = tile->GetPosition();
+
+        if (tilePos.x == xPos && tilePos.y == yPos) {
+            return tile;
+        }
+    }
+
+    throw invalid_argument("Tile not found\n");
+}
+
 vector<Tile*> Map::GetTilesInViewport(int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY) {
     vector<Tile*> tilesInRange;
 

@@ -27,6 +27,13 @@ public:
         DIR_Right
     };
 
+    enum InfoPanelLocation {
+        IFP_TOPLEFT,
+        IFP_TOPRIGHT,
+        IFP_BOTLEFT,
+        IFP_BOTRIGHT
+    };
+
 	enum MainMenuSelection {
 		MMS_Start,
 		MMS_MainMenu,

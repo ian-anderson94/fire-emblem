@@ -1,8 +1,11 @@
 #include "GameCursor.h"
 #include <iostream>
 
-GameCursor::GameCursor(int tileSize) {
-    x = y = 0;
+GameCursor::GameCursor(int tileSize, int xPos, int yPos) {
+    x = xPos;
+    y = yPos;
+    vpX = xPos;
+    vpY = yPos;
     size = tileSize;
 
     cursorImage = "./assets/cursor.png";
@@ -11,8 +14,8 @@ GameCursor::GameCursor(int tileSize) {
 
 void GameCursor::Render(SDL_Renderer* rend, int xOffset, int yOffset) {
     SDL_Rect dst {
-        x + xOffset,
-        y + yOffset,
+        ((x - vpX) * size) + xOffset,
+        ((y - vpY) * size) + yOffset,
         size,
         size
     };
@@ -21,6 +24,11 @@ void GameCursor::Render(SDL_Renderer* rend, int xOffset, int yOffset) {
 }
 
 void GameCursor::Move(int dx, int dy) {
-    x += dx * size;
-    y += dy * size;
+    x += dx;
+    y += dy;
+}
+
+void GameCursor::UpdateKnownViewportLocation(int xPos, int yPos) {
+    vpX = xPos;
+    vpY = yPos;
 }

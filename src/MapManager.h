@@ -9,6 +9,8 @@ class MapManager {
         MapManager(int size);
         void LoadMapFromFile(const char* file);
         void Render(SDL_Renderer* rend, int xOffset, int yOffset, int vpWidth, int vpHeight, int camX, int camY);
+        Map::Dimensions GetMapSize() { return map->GetMapSize(); };
+        Tile* GetTile(int xPos, int yPos) { return map->GetTile(xPos, yPos); };
 
     private:
         Map* map;

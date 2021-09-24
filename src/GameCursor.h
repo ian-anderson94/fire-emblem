@@ -10,14 +10,15 @@ class GameCursor {
             int x, y, size;
         };
 
-        GameCursor(int tileSize);
+        GameCursor(int tileSize, int xPos, int yPos);
+        void UpdateKnownViewportLocation(int xPos, int yPos);
         void Render(SDL_Renderer* rend, int xOffset, int yOffset);
         void Move(int dx, int dy);
 
         Position GetPosition() { return Position {x, y, size}; };
 
     private:
-        int x, y, size;
+        int x, y, vpX, vpY, size;
         SDL_Texture* cursorTexture;
         const char* cursorImage;
 };
