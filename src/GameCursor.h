@@ -14,6 +14,7 @@ class GameCursor {
         void UpdateKnownViewportLocation(int xPos, int yPos);
         void Render(SDL_Renderer* rend, int xOffset, int yOffset);
         void Move(int dx, int dy);
+        void MoveToActor(int x, int y);
 
         Position GetPosition() { return Position {x, y, size}; };
 

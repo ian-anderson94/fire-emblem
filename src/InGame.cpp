@@ -8,20 +8,42 @@ InGame::InGame(int resX, int resY, int ts) {
     mapManager = new MapManager(tileSize);
     mapManager->LoadMapFromFile("./maps/test.txt");
 
+    activeActor = nullptr;
+    selectedActor = nullptr;
+    actorUnderCursor = nullptr;
+
+    actorManager = new ActorManager(resX, resY, ts);
     infoPanel = new InformationPanel(resX, resY, ts);
     viewPort = new ViewPort(resX, resY, ts);
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
+    turnManager = new TurnManager(resX, resY, ts);
 
     backgroundTextureFile = "./assets/mainmenu_background.png";
     backgroundTexture = TextureManager::loadTexture(backgroundTextureFile);
+
+    Actor* testActor1 = new Actor("./assets/man.png", "./assets/man.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor2 = new Actor("./assets/man.png", "./assets/man.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor3 = new Actor("./assets/man.png", "./assets/man.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    actorManager->Add(testActor1);
+    actorManager->Add(testActor2);
+    actorManager->Add(testActor3);
 }
 
 void InGame::Update(double dt) {
     GameCursor::Position cursorPos = cursor->GetPosition();
     Tile* tileUnderCursor = mapManager->GetTile(cursorPos.x, cursorPos.y);
+    actorUnderCursor = actorManager->GetActor(cursorPos.x, cursorPos.y);
 
     cursor->UpdateKnownViewportLocation(viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     infoPanel->Update(cursorPos.x, cursorPos.y, tileUnderCursor);
+
+    if (turnManager->IsCurrentTurnOver()) {
+        activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
+
+        Actor::Position actorPos = activeActor->GetPosition();
+        cursor->MoveToActor(actorPos.x, actorPos.y);
+        viewPort->MoveToActor(actorPos.x, actorPos.y);
+    }
 }
 
 void InGame::Render(SDL_Renderer* rend) {
@@ -29,8 +51,10 @@ void InGame::Render(SDL_Renderer* rend) {
 
     RenderBackground(rend);
     mapManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
-    cursor->Render(rend, pos.x, pos.y);
     viewPort->Render(rend);
+    actorManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
+    cursor->Render(rend, pos.x, pos.y);
+    turnManager->Render(rend);
     infoPanel->Render(rend);
 }
 
@@ -94,6 +118,23 @@ int InGame::HandleEvents(SDL_Event event) {
         
         if (cursorPos.x + 1 < mapSize.w) {
             cursor->Move(1, 0);
+        }
+    }
+
+    if (!selectedActor) {
+        if (Utils::Contains(actions, Enums::ACTION_Select)) {
+            if (actorUnderCursor != nullptr && actorUnderCursor->GetPlayerControlled() == true && actorUnderCursor == activeActor) {
+                selectedActor = actorUnderCursor;
+                selectedActor->SetSelected(true);
+            }
+        }
+    } else {
+        if (Utils::Contains(actions, Enums::ACTION_Select)) {
+            GameCursor::Position cursorPos = cursor->GetPosition();
+            selectedActor->Move(cursorPos.x, cursorPos.y);
+            selectedActor->SetSelected(false);
+            selectedActor = nullptr;
+            turnManager->EndTurn();
         }
     }
 

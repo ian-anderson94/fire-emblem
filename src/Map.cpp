@@ -31,18 +31,6 @@ vector<Tile*> Map::GetTilesInViewport(int xOffset, int yOffset, int wTiles, int 
                 tilesInRange.push_back(tile);
             }
         }
-
-        // Account for ViewPort's offset
-        /*
-        int currX = currTilePos.x + x;
-        int currY = currTilePos.y + y;
-
-        if (currX >= x && currX + currTilePos.size <= x + w) {
-            if (currY >= y && currY + currTilePos.size <= y + h) {
-                tilesInRange.push_back(tile);
-            }
-        }
-        */
     }
 
     return tilesInRange;

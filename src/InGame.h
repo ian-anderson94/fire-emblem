@@ -1,11 +1,14 @@
 #ifndef SRC_INGAME_H_
 #define SRC_INGAME_H_
 
+#include "Actor.h"
+#include "ActorManager.h"
 #include "GameCursor.h"
 #include "InformationPanel.h"
 #include "InputManager.h"
 #include "MapManager.h"
 #include "TextureManager.h"
+#include "TurnManager.h"
 #include "ViewPort.h"
 #include "SDL2/SDL.h"
 
@@ -23,12 +26,18 @@ class InGame {
         int resolutionY;
         int tileSize;
 
+        Actor* activeActor;
+        Actor* selectedActor;
+        Actor* actorUnderCursor;
+
+        ActorManager* actorManager;
         InformationPanel* infoPanel;
         GameCursor* cursor;
         ViewPort* viewPort;
         const char* backgroundTextureFile;
         SDL_Texture* backgroundTexture;
         MapManager* mapManager;
+        TurnManager* turnManager;
 
         void RenderBackground(SDL_Renderer* rend);
 };

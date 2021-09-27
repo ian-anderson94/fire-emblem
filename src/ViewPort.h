@@ -16,6 +16,7 @@ class ViewPort {
         Position GetPosition() { return Position{x, y, w, h, cameraX, cameraY, maxTilesHorizontal, maxTilesVertical }; };
         void Render(SDL_Renderer* rend);
         void MoveCamera(int dx, int dy);
+        void MoveToActor(int x, int y);
 
     private:
         int resolutionX;

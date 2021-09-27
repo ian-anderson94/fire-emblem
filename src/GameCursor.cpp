@@ -28,6 +28,11 @@ void GameCursor::Move(int dx, int dy) {
     y += dy;
 }
 
+void GameCursor::MoveToActor(int x, int y) {
+    this->x = x;
+    this->y = y;
+}
+
 void GameCursor::UpdateKnownViewportLocation(int xPos, int yPos) {
     vpX = xPos;
     vpY = yPos;
