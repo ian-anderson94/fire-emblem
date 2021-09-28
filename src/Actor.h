@@ -1,8 +1,13 @@
 #ifndef SRC_ACTOR_H_
 #define SRC_ACTOR_H_
 
+#include "Map.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
+
+#include <list>
+
+using namespace std;
 
 class Actor {
     public:
@@ -16,7 +21,9 @@ class Actor {
         };
 
         Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats);
-        void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY);
+        void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
+        void Update(Map* map);
+
         Position GetPosition() { return Position{x, y, size}; };
         Stats GetStats() { return stats; };
         SDL_Texture* GetIcon() { return iconTexture; };
@@ -32,12 +39,15 @@ class Actor {
 
         const char* iconPath;
         const char* imagePath;
-        const char* moveTilePath;
-        SDL_Texture* moveTileTexture;
+        const char* passableTilePath;
+        const char* impassableTilePath;
+        SDL_Texture* impassableTileTexture;
+        SDL_Texture* passableTileTexture;
         SDL_Texture* iconTexture;
         SDL_Texture* actorTexture;
+        Map* map;
 
-        void RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY);
+        void RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
 };
 
 #endif /* SRC_ACTOR_H_ */

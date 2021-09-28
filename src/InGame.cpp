@@ -37,6 +37,8 @@ void InGame::Update(double dt) {
     cursor->UpdateKnownViewportLocation(viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     infoPanel->Update(cursorPos.x, cursorPos.y, tileUnderCursor);
 
+    actorManager->Update(mapManager->GetMap());
+
     if (turnManager->IsCurrentTurnOver()) {
         activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
 
@@ -48,6 +50,8 @@ void InGame::Update(double dt) {
 
 void InGame::Render(SDL_Renderer* rend) {
     ViewPort::Position pos = viewPort->GetPosition();
+    GameCursor::Position cursorPos = cursor->GetPosition();
+    Actor::Position actorPos = selectedActor->GetPosition();
 
     RenderBackground(rend);
     mapManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
@@ -56,6 +60,10 @@ void InGame::Render(SDL_Renderer* rend) {
     cursor->Render(rend, pos.x, pos.y);
     turnManager->Render(rend);
     infoPanel->Render(rend);
+
+    if (selectedActor) {
+        RenderPathingArrow(cursorPos.x, cursorPos.y, actorPos.x, actorPos.y);
+    }
 }
 
 void InGame::RenderBackground(SDL_Renderer* rend) {
@@ -63,6 +71,10 @@ void InGame::RenderBackground(SDL_Renderer* rend) {
     SDL_Rect dst {0, 0, resolutionX, resolutionY};
 
     SDL_RenderCopy(rend, backgroundTexture, &src, &dst);
+}
+
+void InGame::RenderPathingArrow(int cursorX, int cursorY, int actorX, int actorY) {
+
 }
 
 int InGame::HandleEvents(SDL_Event event) {
@@ -131,10 +143,17 @@ int InGame::HandleEvents(SDL_Event event) {
     } else {
         if (Utils::Contains(actions, Enums::ACTION_Select)) {
             GameCursor::Position cursorPos = cursor->GetPosition();
-            selectedActor->Move(cursorPos.x, cursorPos.y);
-            selectedActor->SetSelected(false);
-            selectedActor = nullptr;
-            turnManager->EndTurn();
+            Actor::Position actorPos = selectedActor->GetPosition();
+            Actor::Stats stats = selectedActor->GetStats();
+
+            if (mapManager->GetTile(cursorPos.x, cursorPos.y)->IsPassable()) {
+                if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
+                    selectedActor->Move(cursorPos.x, cursorPos.y);
+                    selectedActor->SetSelected(false);
+                    selectedActor = nullptr;
+                    turnManager->EndTurn();
+                }
+            }
         }
     }
 

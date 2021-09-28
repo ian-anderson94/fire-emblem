@@ -30,11 +30,11 @@ class Map {
 
     private:
         int tileSize;
-        vector<Tile*> tiles;
         vector<vector<string>> tileLayout;
         unordered_map<string, TileDefinition*> tileDefinitions;
 
-        vector<Tile*> ParseTilesFromLayout();
+        vector<vector<Tile*>> tiles;
+        vector<vector<Tile*>> ParseTilesFromLayout();
 
         void PrintLayout();
 };

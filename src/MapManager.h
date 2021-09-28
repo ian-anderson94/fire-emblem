@@ -11,6 +11,7 @@ class MapManager {
         void Render(SDL_Renderer* rend, int xOffset, int yOffset, int vpWidth, int vpHeight, int camX, int camY);
         Map::Dimensions GetMapSize() { return map->GetMapSize(); };
         Tile* GetTile(int xPos, int yPos) { return map->GetTile(xPos, yPos); };
+        Map* GetMap() { return map; };
 
     private:
         Map* map;

@@ -2,6 +2,7 @@
 #define SRC_ACTORMANAGER_H_
 
 #include "Actor.h"
+#include "Map.h"
 #include "SDL2/SDL.h"
 
 #include <unordered_set>
@@ -13,6 +14,7 @@ class ActorManager {
     public:
         ActorManager(int resolutionX, int resolutionY, int tileSize);
         void Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY);
+        void Update(Map* map);
 
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);

@@ -1,5 +1,13 @@
 #include "MapLoader.h"
 
+const std::string hp = "hp";
+const std::string hpMax = "hpMax";
+const std::string str = "str";
+const std::string def = "def";
+const std::string agi = "agi";
+const std::string spd = "spd";
+const std::string mov = "mov";
+
 MapLoader::MapLoader(int size) {
     tileSize = size;
 
@@ -73,6 +81,58 @@ vector<vector<string>> MapLoader::ParseLayout(vector<string> layout) {
     return charLayout;
 }
 
+// Parse a Stats object from provided attribute string. Formatted as [attr1, attr3, attr-2, etc]
+Stats MapLoader::ParseStats(string attributes) {
+    attributes.erase(remove(attributes.begin(), attributes.end(), '['), attributes.end());
+    attributes.erase(remove(attributes.begin(), attributes.end(), ']'), attributes.end());
+
+    string delimiter = ",";
+    string token;
+    size_t pos = 0;
+
+    vector<string> attrs;
+    while ((pos = attributes.find(delimiter)) != string::npos) {
+        token = attributes.substr(0, pos);
+        attrs.push_back(token);
+        attributes.erase(0, pos + delimiter.length());
+    }
+
+    if (!attributes.empty()) {
+        attrs.push_back(attributes);
+    }
+
+    Stats stats;
+    smatch matches;
+    regex pattern("([A-Za-z]+)(-?[0-9]+)");
+
+    for (auto const& attr : attrs) {
+        if (!regex_search(attr, matches, pattern)) {
+            throw invalid_argument("attributes not properly formatted");
+        }
+
+        string attrType = matches.str(1);
+        int attrVal = stoi(matches.str(2));
+
+        if (attrType.compare(hp) == 0) {
+            stats.hp = attrVal;
+        } else if (attrType.compare(hpMax) == 0) {
+            stats.hpMax = attrVal;
+        } else if (attrType.compare(str) == 0) {
+            stats.str = attrVal;
+        } else if (attrType.compare(def) == 0) {
+            stats.def = attrVal;
+        } else if (attrType.compare(agi) == 0) {
+            stats.agi = attrVal;
+        } else if (attrType.compare(spd) == 0) {
+            stats.spd = attrVal;
+        } else if (attrType.compare(mov) == 0) {
+            stats.mov = attrVal;
+        }
+    }
+
+    return stats;
+}
+
 TileDefinition* MapLoader::CreateTileDefinitionFromGroup(string label, vector<string> definition) {
     unordered_map<string, string> elements;
 
@@ -83,6 +143,7 @@ TileDefinition* MapLoader::CreateTileDefinitionFromGroup(string label, vector<st
         elements.insert(pair<string, string>(token, predicate));
     }
 
+    Stats stats = ParseStats(elements["attributes"]);
     string assetPath = baseAssetPath + elements["image"] + ".png";
     bool isPassable = Utils::StoB(elements["passable"]);
 
@@ -91,6 +152,6 @@ TileDefinition* MapLoader::CreateTileDefinitionFromGroup(string label, vector<st
         elements["symbol"],
         assetPath,
         isPassable,
-        elements["attribute"]
+        stats
     );
 }

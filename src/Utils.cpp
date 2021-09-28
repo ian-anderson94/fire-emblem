@@ -3,7 +3,7 @@
 bool Utils::StoB(string s) {
     string curr = Utils::ToLower(s);
 
-    if (curr.compare("0") == 0) {
+    if (curr.compare("false") == 0) {
         return false;
     } else {
         return true;

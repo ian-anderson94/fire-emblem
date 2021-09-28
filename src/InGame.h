@@ -40,6 +40,7 @@ class InGame {
         TurnManager* turnManager;
 
         void RenderBackground(SDL_Renderer* rend);
+        void RenderPathingArrow(int cursorX, int cursorY, int actorX, int actorY);
 };
 
 #endif /* SRC_INGAME_H_ */

@@ -17,6 +17,7 @@ public:
 	Tile(TileDefinition* tileDef, int xPos, int yPos, int tileSize);
     Position GetPosition() { return Position{x, y, size}; };
     string GetTileType() { return definition->GetLabel(); };
+    bool IsPassable() { return passable; };
     void Render(SDL_Renderer* rend);
     void RenderRelativeToViewPort(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY);
 

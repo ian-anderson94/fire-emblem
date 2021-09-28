@@ -11,15 +11,23 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
 
     imagePath = image;
     iconPath = icon;
-    moveTilePath = "./assets/moveTile.png";
-    moveTileTexture = TextureManager::loadTexture(moveTilePath);
+    passableTilePath = "./assets/moveTile.png";
+    impassableTilePath = "./assets/impassable_tile.png";
+    passableTileTexture = TextureManager::loadTexture(passableTilePath);
+    impassableTileTexture = TextureManager::loadTexture(impassableTilePath);
     actorTexture = TextureManager::loadTexture(imagePath);
     iconTexture = TextureManager::loadTexture(iconPath);
+
+    SDL_SetTextureBlendMode(passableTileTexture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(impassableTileTexture, SDL_BLENDMODE_BLEND);
+
+    SDL_SetTextureAlphaMod(passableTileTexture, 160);
+    SDL_SetTextureAlphaMod(impassableTileTexture, 160);
 }
 
-void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY) {
+void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
     if (selected) {
-        RenderPossibleMoves(rend, xOffset, yOffset, camX, camY);
+        RenderPossibleMoves(rend, xOffset, yOffset, camX, camY, wTiles, hTiles);
     }
 
     SDL_Rect dst {
@@ -32,21 +40,35 @@ void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffse
     SDL_RenderCopy(rend, actorTexture, NULL, &dst);
 }
 
-void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY) {
-    for (int i = (stats.mov * -1); i < stats.mov; i++) {
-        for (int j = (stats.mov * -1); j < stats.mov; j++) {
-            if (abs(i) + abs(j) < stats.mov) {
-                SDL_Rect dst {
-                    ((x + i - camX) * size) + xOffset,
-                    ((y + j - camY) * size) + yOffset,
-                    size,
-                    size
-                };
+void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
+    list<pair<pair<int, int>, bool>> coords;
+    int currX, currY;
 
-                SDL_RenderCopy(rend, moveTileTexture, NULL, &dst);
+    for (int i = (stats.mov * -1); i <= stats.mov; i++) {
+        for (int j = (stats.mov * -1); j <= stats.mov; j++) {
+            if (abs(i) + abs(j) <= stats.mov) {
+                if ((x+i-camX) >= 0 && (x+i-camX) < wTiles && (y+j-camY) >= 0 && (y+j-camY) < hTiles) {
+                    Tile* currTile = map->GetTile(x+i, y+j);
+                    currX = ((x + i - camX) * size) + xOffset;
+                    currY = ((y + j - camY) * size) + yOffset;
+                    coords.push_back(pair<pair<int, int>, bool>(pair<int, int>(currX, currY), currTile->IsPassable()));
+                }
             }
         }
     }
+
+    for (auto const& kvp : coords) {
+        if (kvp.first.first > camX * size && kvp.first.second > camY * size) {
+            if (kvp.first.first < (camX + wTiles) * size && kvp.first.second < (camY + hTiles) * size) {
+               SDL_Rect dst {kvp.first.first, kvp.first.second, size, size};
+               kvp.second ? SDL_RenderCopy(rend, passableTileTexture, NULL, &dst) : SDL_RenderCopy(rend, impassableTileTexture, NULL, &dst);
+            }
+        }
+    }
+}
+
+void Actor::Update(Map* map) {
+    this->map = map;
 }
 
 void Actor::Move(int newX, int newY) {

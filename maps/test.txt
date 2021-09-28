@@ -9,7 +9,7 @@ pillar {
     symbol=p
     image=pillarTile
     passable=false
-    attributes=[]
+    attributes=[def 1, mov -1]
 }
 
 layout {

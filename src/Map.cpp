@@ -9,42 +9,43 @@ Map::Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> t
 }
 
 Tile* Map::GetTile(int xPos, int yPos) {
-    for (auto const& tile : tiles) {
-        Tile::Position tilePos = tile->GetPosition();
+   if (xPos >= tiles.size() || yPos >= tiles[0].size()) {
+       throw invalid_argument("Tile not found\n");
+   }
 
-        if (tilePos.x == xPos && tilePos.y == yPos) {
-            return tile;
-        }
-    }
-
-    throw invalid_argument("Tile not found\n");
+   return tiles[xPos][yPos];
 }
 
 vector<Tile*> Map::GetTilesInViewport(int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY) {
     vector<Tile*> tilesInRange;
 
-    for (auto const& tile : tiles) {
-        Tile::Position tilePos = tile->GetPosition();
+   for (auto const& col : tiles) {
+       for (auto const& tile : col) {
+            Tile::Position tilePos = tile->GetPosition();
 
-        if (tilePos.x >= camX && tilePos.x < camX + wTiles) {
-            if (tilePos.y >= camY && tilePos.y < camY + hTiles) {
-                tilesInRange.push_back(tile);
+            if (tilePos.x >= camX && tilePos.x < camX + wTiles) {
+                if (tilePos.y >= camY && tilePos.y < camY + hTiles) {
+                    tilesInRange.push_back(tile);
+                }
             }
         }
-    }
+   }
 
     return tilesInRange;
 }
 
-vector<Tile*> Map::ParseTilesFromLayout() {
-    vector<Tile*> tiles;
+vector<vector<Tile*>> Map::ParseTilesFromLayout() {
+    vector<vector<Tile*>> tiles;
 
     for (int col = 0; col < tileLayout.size(); col++) {
+        vector<Tile*> tileCol;
+
         for (int row = 0; row < tileLayout[col].size(); row++) {
             string currSymbol = tileLayout[col][row];
-            //tiles.push_back(new Tile(tileDefinitions[currSymbol], row * tileSize, col * tileSize, tileSize));
-            tiles.push_back(new Tile(tileDefinitions[currSymbol], row, col, tileSize));
+            tileCol.push_back(new Tile(tileDefinitions[currSymbol], row, col, tileSize));
         }
+
+        tiles.push_back(tileCol);
     }
 
     return tiles;

@@ -5,8 +5,10 @@
 #include "MapLoader.h"
 #include "TileDefinition.h"
 #include "Utils.h"
+#include "Stats.h"
 
 #include <string>
+#include <exception>
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
@@ -26,6 +28,7 @@ class MapLoader {
         unordered_map<string, vector<string>> LoadAndParseFileIntoGroups(const char* file);
         TileDefinition* CreateTileDefinitionFromGroup(string label, vector<string> definition);
         vector<vector<string>> ParseLayout(vector<string> layout);
+        Stats ParseStats(string attributes);
 
         vector<string> reservedLabels;
         string baseAssetPath;

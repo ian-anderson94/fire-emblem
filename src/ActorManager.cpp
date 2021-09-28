@@ -10,7 +10,13 @@ void ActorManager::Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTil
     vector<Actor*> actorsInViewport = GetActorsInViewport(xOffset, yOffset, wTiles, hTiles, camX, camY);
 
     for (auto const& actor : actorsInViewport) {
-        actor->RenderRelativeToViewport(rend, xOffset, yOffset, camX, camY);
+        actor->RenderRelativeToViewport(rend, xOffset, yOffset, camX, camY, wTiles, hTiles);
+    }
+}
+
+void ActorManager::Update(Map* map) {
+    for (auto const& actor : actors) {
+        actor->Update(map);
     }
 }
 
