@@ -8,12 +8,13 @@ Map::Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> t
     tiles = ParseTilesFromLayout();
 }
 
-Tile* Map::GetTile(int xPos, int yPos) {
-   if (xPos >= tiles.size() || yPos >= tiles[0].size()) {
+Tile* Map::GetTile(int row, int col) {
+   if (col >= tiles.size() || row >= tiles[0].size()) {
+       cout << printf("x: %d y: %d\n", row, col);
        throw invalid_argument("Tile not found\n");
    }
 
-   return tiles[xPos][yPos];
+   return tiles[col][row];
 }
 
 vector<Tile*> Map::GetTilesInViewport(int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY) {
