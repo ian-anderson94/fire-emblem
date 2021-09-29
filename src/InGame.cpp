@@ -14,6 +14,7 @@ InGame::InGame(int resX, int resY, int ts) {
 
     actorManager = new ActorManager(resX, resY, ts);
     infoPanel = new InformationPanel(resX, resY, ts);
+    pathingManager = new PathingManager(mapManager->GetMap());
     viewPort = new ViewPort(resX, resY, ts);
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     turnManager = new TurnManager(resX, resY, ts);
@@ -31,6 +32,7 @@ InGame::InGame(int resX, int resY, int ts) {
 
 void InGame::Update(double dt) {
     GameCursor::Position cursorPos = cursor->GetPosition();
+    ViewPort::Position vpPos = viewPort->GetPosition();
     Tile* tileUnderCursor = mapManager->GetTile(cursorPos.x, cursorPos.y);
     actorUnderCursor = actorManager->GetActor(cursorPos.x, cursorPos.y);
 
@@ -95,6 +97,13 @@ int InGame::HandleEvents(SDL_Event event) {
         if (cursorPos.y != 0) {
             cursor->Move(0, -1);
         }
+
+        if (selectedActor) {
+            GameCursor::Position cPos = cursor->GetPosition();
+            Actor::Position aPos = selectedActor->GetPosition();
+
+            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        }
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Down)) {
@@ -106,6 +115,13 @@ int InGame::HandleEvents(SDL_Event event) {
         
         if (cursorPos.y + 1 < mapSize.h) {
             cursor->Move(0, 1);
+        }
+
+        if (selectedActor) {
+            GameCursor::Position cPos = cursor->GetPosition();
+            Actor::Position aPos = selectedActor->GetPosition();
+
+            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
         }
     }
 
@@ -119,6 +135,13 @@ int InGame::HandleEvents(SDL_Event event) {
         if (cursorPos.x != 0) {
             cursor->Move(-1, 0);
         }
+
+        if (selectedActor) {
+            GameCursor::Position cPos = cursor->GetPosition();
+            Actor::Position aPos = selectedActor->GetPosition();
+
+            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        }
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Right)) {
@@ -130,6 +153,13 @@ int InGame::HandleEvents(SDL_Event event) {
         
         if (cursorPos.x + 1 < mapSize.w) {
             cursor->Move(1, 0);
+        }
+
+        if (selectedActor) {
+            GameCursor::Position cPos = cursor->GetPosition();
+            Actor::Position aPos = selectedActor->GetPosition();
+
+            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
         }
     }
 
@@ -155,6 +185,10 @@ int InGame::HandleEvents(SDL_Event event) {
                 }
             }
         }
+    }
+
+    if (Utils::Contains(actions, Enums::ACTION_Jump)) {
+        PrintPositions();
     }
 
     return Enums::MMS_GameStart;

@@ -44,6 +44,7 @@ void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, in
     list<pair<pair<int, int>, bool>> coords;
     int currX, currY;
 
+    // Add possible moves to vector
     for (int i = (stats.mov * -1); i <= stats.mov; i++) {
         for (int j = (stats.mov * -1); j <= stats.mov; j++) {
             if (abs(i) + abs(j) <= stats.mov) {
@@ -57,9 +58,10 @@ void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, in
         }
     }
 
+    // Only render those that are on screen
     for (auto const& kvp : coords) {
-        if (kvp.first.first > camX * size && kvp.first.second > camY * size) {
-            if (kvp.first.first < (camX + wTiles) * size && kvp.first.second < (camY + hTiles) * size) {
+        if (kvp.first.first >= camX * size && kvp.first.second >= camY * size) {
+            if (kvp.first.first <= (camX + wTiles) * size + xOffset && kvp.first.second <= (camY + hTiles) * size + yOffset) {
                SDL_Rect dst {kvp.first.first, kvp.first.second, size, size};
                kvp.second ? SDL_RenderCopy(rend, passableTileTexture, NULL, &dst) : SDL_RenderCopy(rend, impassableTileTexture, NULL, &dst);
             }

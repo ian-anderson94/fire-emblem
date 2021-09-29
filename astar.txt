@@ -1,0 +1,43 @@
+//openSet is the nodes that have calculated cost
+//closedSet is the nodes that haven't calculated cost yet
+
+Path findPath(startNode, endNode) {
+    openSet.add(startNode)
+    while(openSet.any?) {
+	openSet.sort();
+	currentNode = openSet.pop_front();
+	closeSet.add(currentNode);
+
+	if (currentNode == endNode) {
+	    while (currentNode != startNode) {
+		path.Add(currentNode);
+		currentNode = currentNode.parent;
+	    }
+
+	    return path;
+	}
+
+	for (neighborNode : currentNode.neighbors) {
+	    if (!neighborNode.walkable || closedSet.contains(neighborNode)) {
+		continue;
+	    }
+
+	    int cost = currentNode.gCost + heuristic_cost_estimate(currentNode, neighborNode);
+	    if (cost < neighbor.gCost || !openSet.contains(neighbor)) {
+		neighbor.gCost = cost;
+		neighbor.hCost = heuristic_cost_estimate(neighbor, targetNode);
+		neighbor.parent = currentNode;
+
+		if (!openSet.contains(neighbor)) {
+		    openSet.Add(neighbor);
+		}
+	    }
+	}
+    }
+
+    return null;
+}
+
+int heuristic_cost_estimate(nodeA, nodeB) {
+
+}

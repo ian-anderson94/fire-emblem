@@ -6,6 +6,7 @@
 #include "GameCursor.h"
 #include "InformationPanel.h"
 #include "InputManager.h"
+#include "PathingManager.h"
 #include "MapManager.h"
 #include "TextureManager.h"
 #include "TurnManager.h"
@@ -33,6 +34,7 @@ class InGame {
         ActorManager* actorManager;
         InformationPanel* infoPanel;
         GameCursor* cursor;
+        PathingManager* pathingManager;
         ViewPort* viewPort;
         const char* backgroundTextureFile;
         SDL_Texture* backgroundTexture;
