@@ -1,11 +1,29 @@
 #include "PathingManager.h"
 
-PathingManager::PathingManager(Map* map) {
+PathingManager::PathingManager(Map* map, int tileSize) {
     this->map = map;
+    this->tileSize = tileSize;
+
+    arrowHeadTexture = TextureManager::loadTexture(arrowHeadImagePath);
+    arrowBodyTexture = TextureManager::loadTexture(arrowBodyImagePath);
+    arrowTurnTexture = TextureManager::loadTexture(arrowTurnImagePath);
 }
 
 void PathingManager::Update(Map* map) {
     this->map = map;
+}
+
+void PathingManager::Render(SDL_Renderer* rend, int camX, int camY, int xOffset, int yOffset) {    
+    for (int index = 0; index < currPath.size(); index++) {
+        SDL_Rect dst {
+            ((currPath[index].x - camX) * tileSize) + xOffset,
+            ((currPath[index].y - camY) * tileSize) + yOffset,
+            tileSize,
+            tileSize
+        };
+
+        SDL_RenderCopy(rend, arrowBodyTexture, NULL, &dst);
+    }
 }
 
 // Calculates a path between two specified points (i.e. the selected actor and the cursor)
@@ -13,9 +31,7 @@ void PathingManager::CalculatePath(int startX, int startY, int endX, int endY) {
     GridLocation start = GridLocation{startX, startY};
     GridLocation end = GridLocation{endX, endY};
 
-    vector<GridLocation> path = AStarSearch(start, end);
-
-    PrintPath(path);
+    currPath = AStarSearch(start, end);
 }
 
 vector<GridLocation> PathingManager::AStarSearch(GridLocation start, GridLocation end) {

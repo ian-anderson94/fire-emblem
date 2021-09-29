@@ -14,7 +14,7 @@ InGame::InGame(int resX, int resY, int ts) {
 
     actorManager = new ActorManager(resX, resY, ts);
     infoPanel = new InformationPanel(resX, resY, ts);
-    pathingManager = new PathingManager(mapManager->GetMap());
+    pathingManager = new PathingManager(mapManager->GetMap(), ts);
     viewPort = new ViewPort(resX, resY, ts);
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     turnManager = new TurnManager(resX, resY, ts);
@@ -64,7 +64,7 @@ void InGame::Render(SDL_Renderer* rend) {
     infoPanel->Render(rend);
 
     if (selectedActor) {
-        RenderPathingArrow(cursorPos.x, cursorPos.y, actorPos.x, actorPos.y);
+        pathingManager->Render(rend, pos.cameraX, pos.cameraY, pos.x, pos.y);
     }
 }
 
@@ -187,9 +187,11 @@ int InGame::HandleEvents(SDL_Event event) {
         }
     }
 
+    /*
     if (Utils::Contains(actions, Enums::ACTION_Jump)) {
         PrintPositions();
     }
+    */
 
     return Enums::MMS_GameStart;
 }
