@@ -1,11 +1,12 @@
 #include "Actor.h"
 
 Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats) {
-    x = xPos;
-    y = yPos;
+    x = xDouble = xPos;
+    y = yDouble = yPos;
     size = ts;
     stats = actorStats;
 
+    moving = false;
     selected = false;
     playerControlled = true;
 
@@ -31,8 +32,8 @@ void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffse
     }
 
     SDL_Rect dst {
-        ((x - camX) * size) + xOffset, 
-        ((y - camY) * size) + yOffset, 
+        (int)((xDouble - camX) * size) + xOffset, 
+        (int)((yDouble - camY) * size) + yOffset, 
         size, 
         size
     };
@@ -69,11 +70,49 @@ void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, in
     }
 }
 
-void Actor::Update(Map* map) {
+void Actor::Update(double dt, Map* map) {
     this->map = map;
+
+    if (!path.empty()) {
+        MoveToWaypoint(dt);
+    } else {
+        moving = false;
+        x = (int) xDouble;
+        y = (int) yDouble;
+    }
 }
 
-void Actor::Move(int newX, int newY) {
-    x = newX;
-    y = newY;
+void Actor::MoveToWaypoint(double dt) {
+    if (waypoint.x > xDouble) {
+        xDouble += size * dt;
+        xDouble = xDouble >= waypoint.x ? waypoint.x : xDouble;
+    } else {
+        xDouble -= size * dt;
+        xDouble = xDouble <= waypoint.x ? waypoint.x : xDouble;
+    }
+
+    if (waypoint.y > y) {
+        yDouble += size * dt;
+        yDouble = yDouble >= waypoint.y ? waypoint.y : yDouble;
+    } else {
+        yDouble -= size * dt;
+        yDouble = yDouble <= waypoint.y ? waypoint.y : yDouble;
+    }
+
+    if (xDouble == waypoint.x && yDouble == waypoint.y) {
+        path.erase(path.begin());
+        if (!path.empty()) {
+            waypoint = path[0];
+        }
+    }
+}
+
+void Actor::Move(GridLocation dst, vector<GridLocation> path) {
+    this->path = path;
+    waypoint = path[0];
+    moving = true;
+    /*
+    x = dst.x;
+    y = dst.y;
+    */
 }

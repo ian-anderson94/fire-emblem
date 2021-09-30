@@ -14,7 +14,7 @@ class ActorManager {
     public:
         ActorManager(int resolutionX, int resolutionY, int tileSize);
         void Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY);
-        void Update(Map* map);
+        void Update(double dt, Map* map);
 
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);

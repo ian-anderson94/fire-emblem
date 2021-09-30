@@ -1,6 +1,7 @@
 #ifndef SRC_ACTOR_H_
 #define SRC_ACTOR_H_
 
+#include "GridLocation.h"
 #include "Map.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
@@ -22,20 +23,25 @@ class Actor {
 
         Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats);
         void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
-        void Update(Map* map);
+        void Update(double dt, Map* map);
 
         Position GetPosition() { return Position{x, y, size}; };
         Stats GetStats() { return stats; };
         SDL_Texture* GetIcon() { return iconTexture; };
         bool IsSelected() { return selected; };
+        bool IsMoving() { return moving; };
         void SetSelected(bool val) { selected = val; };
         bool GetPlayerControlled() { return playerControlled; };
-        void Move(int newX, int newY);
+        void Move(GridLocation dst, vector<GridLocation> path);
 
     private:
         int x, y, size;
-        bool playerControlled, selected;
+        double xDouble, yDouble;
+        bool playerControlled, selected, moving;
         Stats stats;
+
+        vector<GridLocation> path;
+        GridLocation waypoint;
 
         const char* iconPath;
         const char* imagePath;
@@ -48,6 +54,7 @@ class Actor {
         Map* map;
 
         void RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
+        void MoveToWaypoint(double dt);
 };
 
 #endif /* SRC_ACTOR_H_ */

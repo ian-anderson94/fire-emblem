@@ -32,14 +32,13 @@ InGame::InGame(int resX, int resY, int ts) {
 
 void InGame::Update(double dt) {
     GameCursor::Position cursorPos = cursor->GetPosition();
-    ViewPort::Position vpPos = viewPort->GetPosition();
     Tile* tileUnderCursor = mapManager->GetTile(cursorPos.x, cursorPos.y);
     actorUnderCursor = actorManager->GetActor(cursorPos.x, cursorPos.y);
 
     cursor->UpdateKnownViewportLocation(viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     infoPanel->Update(cursorPos.x, cursorPos.y, tileUnderCursor);
 
-    actorManager->Update(mapManager->GetMap());
+    actorManager->Update(dt, mapManager->GetMap());
 
     if (turnManager->IsCurrentTurnOver()) {
         activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
@@ -53,7 +52,6 @@ void InGame::Update(double dt) {
 void InGame::Render(SDL_Renderer* rend) {
     ViewPort::Position pos = viewPort->GetPosition();
     GameCursor::Position cursorPos = cursor->GetPosition();
-    Actor::Position actorPos = selectedActor->GetPosition();
 
     RenderBackground(rend);
     mapManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
@@ -64,7 +62,10 @@ void InGame::Render(SDL_Renderer* rend) {
     infoPanel->Render(rend);
 
     if (selectedActor) {
-        pathingManager->Render(rend, pos.cameraX, pos.cameraY, pos.x, pos.y);
+        Actor::Position actorPos = selectedActor->GetPosition();
+
+        if (cursorPos.x != actorPos.x || cursorPos.y != actorPos.y)
+            pathingManager->Render(rend, pos.cameraX, pos.cameraY, pos.x, pos.y);
     }
 }
 
@@ -176,9 +177,11 @@ int InGame::HandleEvents(SDL_Event event) {
             Actor::Position actorPos = selectedActor->GetPosition();
             Actor::Stats stats = selectedActor->GetStats();
 
+            vector<GridLocation> path = pathingManager->GetPath();
+
             if (mapManager->GetTile(cursorPos.x, cursorPos.y)->IsPassable()) {
                 if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
-                    selectedActor->Move(cursorPos.x, cursorPos.y);
+                    selectedActor->Move(GridLocation{cursorPos.x, cursorPos.y}, path);
                     selectedActor->SetSelected(false);
                     selectedActor = nullptr;
                     turnManager->EndTurn();

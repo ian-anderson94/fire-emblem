@@ -14,9 +14,9 @@ void ActorManager::Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTil
     }
 }
 
-void ActorManager::Update(Map* map) {
+void ActorManager::Update(double dt, Map* map) {
     for (auto const& actor : actors) {
-        actor->Update(map);
+        actor->Update(dt, map);
     }
 }
 

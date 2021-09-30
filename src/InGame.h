@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "ActorManager.h"
 #include "GameCursor.h"
+#include "GridLocation.h"
 #include "InformationPanel.h"
 #include "InputManager.h"
 #include "PathingManager.h"

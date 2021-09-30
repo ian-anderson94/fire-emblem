@@ -7,14 +7,84 @@ PathingManager::PathingManager(Map* map, int tileSize) {
     arrowHeadTexture = TextureManager::loadTexture(arrowHeadImagePath);
     arrowBodyTexture = TextureManager::loadTexture(arrowBodyImagePath);
     arrowTurnTexture = TextureManager::loadTexture(arrowTurnImagePath);
+    arrowButtTexture = TextureManager::loadTexture(arrowButtImagePath);
 }
 
 void PathingManager::Update(Map* map) {
     this->map = map;
 }
 
-void PathingManager::Render(SDL_Renderer* rend, int camX, int camY, int xOffset, int yOffset) {    
+void PathingManager::Render(SDL_Renderer* rend, int camX, int camY, int xOffset, int yOffset) {
+    SDL_Texture* currTex = nullptr;
+    GridLocation nullStruct = GridLocation {-1, -1};
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    int angle = 0;
+
     for (int index = 0; index < currPath.size(); index++) {
+        GridLocation prev = nullStruct, curr = nullStruct, next = nullStruct;
+
+        curr = currPath[index];
+        if (index > 0) prev = currPath[index - 1];
+        if (index < currPath.size() - 1) next = currPath[index + 1];
+
+        angle = 0;
+        flip = SDL_FLIP_NONE;
+
+        // First tile in path
+        if (prev == nullStruct) {
+            currTex = arrowButtTexture;
+
+            if (next.x > curr.x) {
+                angle = 0;
+            } else if (next.y > curr.y) {
+                angle = 90;
+            } else if (next.x < curr.x) {
+                angle = 180;
+            } else if (next.y < curr.y) {
+                angle = 270;
+            }
+        }
+
+        // Last tile in path
+        else if (next == nullStruct) {
+            currTex = arrowHeadTexture;
+
+            if (curr.x > prev.x) {
+                angle = 0;
+            } else if (curr.y > prev.y) {
+                angle = 90;
+            } else if (curr.x < prev.x) {
+                angle = 180;
+            } else if (curr.y < prev.y) {
+                angle = 270;
+            }
+        }
+
+        // Tiles are in straight line
+        else if (prev.x == next.x || prev.y == next.y) {
+            currTex = arrowBodyTexture;
+
+            if (prev.y == next.y) {
+                angle = 0;
+            } else {
+                angle = 90;
+            }        }
+
+        // Turn
+        else {
+            currTex = arrowTurnTexture;
+
+            if ((prev.x < curr.x && next.y < curr.y) || (prev.y < curr.y && next.x < curr.x)) {
+                flip = SDL_FLIP_NONE;
+            } else if ((prev.y < curr.y && next.x > curr.x) || (next.y < curr.y && prev.x > curr.x)) {
+                flip = SDL_FLIP_HORIZONTAL;
+            } else if ((prev.x > curr.x && next.y > curr.y) || (prev.y > curr.y && next.x > curr.x)) {
+                flip = (SDL_RendererFlip) (SDL_FLIP_VERTICAL | SDL_FLIP_HORIZONTAL);
+            } else if ((prev.y > curr.y && next.x < curr.x) || (prev.x < curr.x && next.y > curr.y)) {
+                angle = SDL_FLIP_VERTICAL;
+            }
+        }
+
         SDL_Rect dst {
             ((currPath[index].x - camX) * tileSize) + xOffset,
             ((currPath[index].y - camY) * tileSize) + yOffset,
@@ -22,7 +92,7 @@ void PathingManager::Render(SDL_Renderer* rend, int camX, int camY, int xOffset,
             tileSize
         };
 
-        SDL_RenderCopy(rend, arrowBodyTexture, NULL, &dst);
+        SDL_RenderCopyEx(rend, currTex, NULL, &dst, angle, NULL, flip);
     }
 }
 
