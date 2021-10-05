@@ -12,6 +12,7 @@ InGame::InGame(int resX, int resY, int ts) {
     selectedActor = nullptr;
     actorUnderCursor = nullptr;
 
+    actionMenu = new ActionMenu(ts);
     actorManager = new ActorManager(resX, resY, ts);
     infoPanel = new InformationPanel(resX, resY, ts);
     pathingManager = new PathingManager(mapManager->GetMap(), ts);
@@ -40,14 +41,15 @@ void InGame::Update(double dt) {
     cursor->UpdateKnownViewportLocation(viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     infoPanel->Update(cursorPos.x, cursorPos.y, tileUnderCursor);
 
+    actionMenu->Update(cursorPos.x, cursorPos.y);
     actorManager->Update(dt, mapManager->GetMap());
 
     if (turnManager->IsCurrentTurnOver()) {
         activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
 
         Actor::Position actorPos = activeActor->GetPosition();
-        cursor->MoveToActor(actorPos.x, actorPos.y);
         viewPort->MoveToActor(actorPos.x, actorPos.y);
+        cursor->MoveToActor(actorPos.x, actorPos.y);
     }
 }
 
@@ -62,6 +64,7 @@ void InGame::Render(SDL_Renderer* rend) {
     cursor->Render(rend, pos.x, pos.y);
     turnManager->Render(rend);
     infoPanel->Render(rend);
+    actionMenu->Render(rend);
 
     if (selectedActor) {
         Actor::Position actorPos = selectedActor->GetPosition();
@@ -102,81 +105,77 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
     ViewPort::Position vpPos = viewPort->GetPosition();
 
     if (Utils::Contains(actions, Enums::ACTION_Up)) {
-        if (cursorPos.y == vpPos.cameraY) {
-            if (vpPos.cameraY != 0) {
-                viewPort->MoveCamera(0, -1);
-            }
-        } 
-        
-        if (cursorPos.y != 0) {
-            cursor->Move(0, -1);
-        }
-
-        if (selectedActor) {
-            GameCursor::Position cPos = cursor->GetPosition();
-            Actor::Position aPos = selectedActor->GetPosition();
-
-            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        if (actionMenu->IsActive()) {
+            actionMenu->DecrementSelection();
+        } else {
+            MoveCursorUp();
         }
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Down)) {
-        if (cursorPos.y + 1 == vpPos.cameraY + (vpPos.h / tileSize)) {
-            if (vpPos.cameraY + (vpPos.h / tileSize) < mapSize.h) {
-                viewPort->MoveCamera(0, 1);
-            }
-        } 
-        
-        if (cursorPos.y + 1 < mapSize.h) {
-            cursor->Move(0, 1);
-        }
-
-        if (selectedActor) {
-            GameCursor::Position cPos = cursor->GetPosition();
-            Actor::Position aPos = selectedActor->GetPosition();
-
-            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        if (actionMenu->IsActive()) {
+            actionMenu->IncrementSelection();
+        } else {
+            MoveCursorDown();
         }
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Left)) {
-        if (cursorPos.x == vpPos.cameraX) {
-            if (vpPos.cameraX != 0) {
-                viewPort->MoveCamera(-1, 0);
-            }
-        } 
-        
-        if (cursorPos.x != 0) {
-            cursor->Move(-1, 0);
-        }
-
-        if (selectedActor) {
-            GameCursor::Position cPos = cursor->GetPosition();
-            Actor::Position aPos = selectedActor->GetPosition();
-
-            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        if (!actionMenu->IsActive()) {
+            MoveCursorLeft();
         }
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Right)) {
-        if (cursorPos.x + 1 == vpPos.cameraX + (vpPos.w / tileSize)) {
-            if (vpPos.cameraX + (vpPos.w / tileSize) < mapSize.w) {
-                viewPort->MoveCamera(1, 0);
-            }
-        }
-        
-        if (cursorPos.x + 1 < mapSize.w) {
-            cursor->Move(1, 0);
-        }
-
-        if (selectedActor) {
-            GameCursor::Position cPos = cursor->GetPosition();
-            Actor::Position aPos = selectedActor->GetPosition();
-
-            pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+        if (!actionMenu->IsActive()) {
+            MoveCursorRight();
         }
     }
 
+    if (Utils::Contains(actions, Enums::ACTION_Select)) {
+        if (actionMenu->IsActive()) {
+            switch (actionMenu->GetSelection()) {
+                case Enums::ACTM_Move:
+                    selectedActor->SetSelected(true);
+                    break;
+                case Enums::ACTM_Attack:
+                    break;
+                case Enums::ACTM_Inspect:
+                    break;
+                case Enums::ACTM_End:
+                    break;
+            }
+
+            actionMenu->SetActive(false);
+        } else if (!selectedActor) {
+            if (actorUnderCursor && actorUnderCursor->IsPlayerControlled()) {
+                selectedActor = actorUnderCursor;
+                actionMenu->SetActive(true);
+            }
+        } else {
+            GameCursor::Position cursorPos = cursor->GetPosition();
+            Actor::Position actorPos = selectedActor->GetPosition();
+            Actor::Stats stats = selectedActor->GetStats();
+
+            vector<GridLocation> path = pathingManager->GetPath();
+            Tile* nextTile = mapManager->GetTile(cursorPos.x, cursorPos.y);
+            Tile* prevTile = mapManager->GetTile(actorPos.x, actorPos.y);
+
+            if (nextTile->IsPassable() && !nextTile->IsOccupied()) {
+                if (actorPos.x != cursorPos.x || actorPos.y != cursorPos.y) {
+                    if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
+                        nextTile->SetOccupied(true);
+                        prevTile->SetOccupied(false);
+                        selectedActor->Move(path);
+                        selectedActor->SetSelected(false);
+                        selectedActor = nullptr;
+                        turnManager->EndTurn();
+                    }
+                }
+            }
+        }
+    }
+/*
     if (!selectedActor) {
         if (Utils::Contains(actions, Enums::ACTION_Select)) {
             if (actorUnderCursor != nullptr && actorUnderCursor->IsPlayerControlled() == true && actorUnderCursor == activeActor) {
@@ -207,6 +206,99 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
                 }
             }
         }
+    }
+*/
+}
+
+void InGame::MoveCursorUp() {
+    Map::Dimensions mapSize = mapManager->GetMapSize();
+    GameCursor::Position cursorPos = cursor->GetPosition();
+    ViewPort::Position vpPos = viewPort->GetPosition();
+
+    if (cursorPos.y == vpPos.cameraY) {
+        if (vpPos.cameraY != 0) {
+            viewPort->MoveCamera(0, -1);
+        }
+    } 
+    
+    if (cursorPos.y != 0) {
+        cursor->Move(0, -1);
+    }
+
+    if (selectedActor) {
+        GameCursor::Position cPos = cursor->GetPosition();
+        Actor::Position aPos = selectedActor->GetPosition();
+
+        pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+    }
+}
+
+void InGame::MoveCursorDown() {
+    Map::Dimensions mapSize = mapManager->GetMapSize();
+    GameCursor::Position cursorPos = cursor->GetPosition();
+    ViewPort::Position vpPos = viewPort->GetPosition();
+
+    if (cursorPos.y + 1 == vpPos.cameraY + (vpPos.h / tileSize)) {
+        if (vpPos.cameraY + (vpPos.h / tileSize) < mapSize.h) {
+            viewPort->MoveCamera(0, 1);
+        }
+    } 
+    
+    if (cursorPos.y + 1 < mapSize.h) {
+        cursor->Move(0, 1);
+    }
+
+    if (selectedActor) {
+        GameCursor::Position cPos = cursor->GetPosition();
+        Actor::Position aPos = selectedActor->GetPosition();
+
+        pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+    }
+}
+
+void InGame::MoveCursorLeft() {
+    Map::Dimensions mapSize = mapManager->GetMapSize();
+    GameCursor::Position cursorPos = cursor->GetPosition();
+    ViewPort::Position vpPos = viewPort->GetPosition();
+
+    if (cursorPos.x == vpPos.cameraX) {
+        if (vpPos.cameraX != 0) {
+            viewPort->MoveCamera(-1, 0);
+        }
+    } 
+    
+    if (cursorPos.x != 0) {
+        cursor->Move(-1, 0);
+    }
+
+    if (selectedActor) {
+        GameCursor::Position cPos = cursor->GetPosition();
+        Actor::Position aPos = selectedActor->GetPosition();
+
+        pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
+    }
+}
+
+void InGame::MoveCursorRight() {
+    Map::Dimensions mapSize = mapManager->GetMapSize();
+    GameCursor::Position cursorPos = cursor->GetPosition();
+    ViewPort::Position vpPos = viewPort->GetPosition();
+
+    if (cursorPos.x + 1 == vpPos.cameraX + (vpPos.w / tileSize)) {
+        if (vpPos.cameraX + (vpPos.w / tileSize) < mapSize.w) {
+            viewPort->MoveCamera(1, 0);
+        }
+    }
+    
+    if (cursorPos.x + 1 < mapSize.w) {
+        cursor->Move(1, 0);
+    }
+
+    if (selectedActor) {
+        GameCursor::Position cPos = cursor->GetPosition();
+        Actor::Position aPos = selectedActor->GetPosition();
+
+        pathingManager->CalculatePath(aPos.x, aPos.y, cPos.x, cPos.y);
     }
 }
 

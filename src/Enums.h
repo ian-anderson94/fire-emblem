@@ -14,6 +14,13 @@ public:
 		ACTION_End
 	};
 
+    enum ActionMenu {
+        ACTM_Move,
+        ACTM_Attack,
+        ACTM_Inspect,
+        ACTM_End,
+    };
+
 	enum CommandLineFlag {
 		CLF_Fullscreen,
 		CLF_xResolution,

@@ -1,6 +1,7 @@
 #ifndef SRC_INGAME_H_
 #define SRC_INGAME_H_
 
+#include "ActionMenu.h"
 #include "Actor.h"
 #include "ActorManager.h"
 #include "BasicAI.h"
@@ -9,12 +10,12 @@
 #include "GridLocation.h"
 #include "InformationPanel.h"
 #include "InputManager.h"
-#include "PathingManager.h"
 #include "MapManager.h"
+#include "PathingManager.h"
+#include "SDL2/SDL.h"
 #include "TextureManager.h"
 #include "TurnManager.h"
 #include "ViewPort.h"
-#include "SDL2/SDL.h"
 
 class InGame {
     public:
@@ -34,6 +35,7 @@ class InGame {
         Actor* selectedActor;
         Actor* actorUnderCursor;
 
+        ActionMenu* actionMenu;
         ActorManager* actorManager;
         InformationPanel* infoPanel;
         GameCursor* cursor;
@@ -47,6 +49,11 @@ class InGame {
         void RenderBackground(SDL_Renderer* rend);
         void HandlePlayerTurn(SDL_Event event);
         void HandleEnemyTurn(SDL_Event event);
+
+        void MoveCursorUp();
+        void MoveCursorDown();
+        void MoveCursorLeft();
+        void MoveCursorRight();
 };
 
 #endif /* SRC_INGAME_H_ */
