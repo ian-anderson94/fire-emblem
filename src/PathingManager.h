@@ -22,6 +22,7 @@ class PathingManager {
         void CalculatePath(int actorX, int actorY, int cursorX, int cursorY);
         void Update(Map* map);
         void Render(SDL_Renderer* rend, int camX, int camY, int xOffset, int yOffset);
+        void TrimPath();
 
         vector<GridLocation> GetPath() { return currPath; };
 

@@ -218,6 +218,10 @@ int PathingManager::CalculateHeuristic(GridLocation left, GridLocation right) {
     return abs(left.x - right.x) + abs(left.y - right.y);
 }
 
+void PathingManager::TrimPath() {
+    currPath.pop_back();
+}
+
 void PathingManager::PrintPath(vector<GridLocation> path) {
     string val = "PATH: ";
 

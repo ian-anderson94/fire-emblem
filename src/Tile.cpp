@@ -8,6 +8,7 @@ Tile::Tile(TileDefinition* tileDef, int xPos, int yPos, int tileSize) {
     size = tileSize;
 
     passable = definition->GetPassable();
+    occupied = false;
 
     string image = definition->GetImageFile();
     tileTexture = TextureManager::loadTexture(definition->GetImageFile().c_str());

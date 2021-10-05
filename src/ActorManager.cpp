@@ -16,7 +16,7 @@ void ActorManager::Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTil
 
 void ActorManager::Update(double dt, Map* map) {
     for (auto const& actor : actors) {
-        actor->Update(dt, map);
+        actor->Update(dt, map, GetPlayerControlled());
     }
 }
 
@@ -46,4 +46,28 @@ vector<Actor*> ActorManager::GetActorsInViewport(int xOffset, int yOffset, int w
     }
 
     return actorsInViewport;
+}
+
+vector<Actor*> ActorManager::GetPlayerControlled() {
+    vector<Actor*> playerControlledActors;
+
+    for (auto const& actor : actors) {
+        if (actor->IsPlayerControlled()) {
+            playerControlledActors.push_back(actor);
+        }
+    }
+
+    return playerControlledActors;
+}
+
+bool ActorManager::AnyActorsMoving() {
+    bool anyMoving = false;
+
+    for (auto const& actor : actors) {
+        if (actor->IsMoving()) {
+            anyMoving = true;
+        }
+    }
+
+    return anyMoving;
 }

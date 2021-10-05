@@ -18,6 +18,8 @@ public:
     Position GetPosition() { return Position{x, y, size}; };
     string GetTileType() { return definition->GetLabel(); };
     bool IsPassable() { return passable; };
+    bool IsOccupied() { return occupied; };
+    void SetOccupied(bool val) { occupied = val; };
     void Render(SDL_Renderer* rend);
     void RenderRelativeToViewPort(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY);
 
@@ -25,7 +27,7 @@ private:
     SDL_Texture* tileTexture;
     TileDefinition* definition;
     int x, y, size;
-    bool passable;
+    bool passable, occupied;
 
     
 };

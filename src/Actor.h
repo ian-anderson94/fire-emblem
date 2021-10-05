@@ -23,19 +23,21 @@ class Actor {
 
         Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats);
         void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
-        void Update(double dt, Map* map);
+        virtual void Update(double dt, Map* map, vector<Actor*> actor);
 
         Position GetPosition() { return Position{x, y, size}; };
         Stats GetStats() { return stats; };
         SDL_Texture* GetIcon() { return iconTexture; };
         bool IsSelected() { return selected; };
         bool IsMoving() { return moving; };
+        bool IsPlayerControlled() { return playerControlled; };
         void SetSelected(bool val) { selected = val; };
-        bool GetPlayerControlled() { return playerControlled; };
-        void Move(GridLocation dst, vector<GridLocation> path);
+        void Move(vector<GridLocation> path);
 
-    private:
-        int x, y, size;
+        virtual void DoTurn();
+
+    protected:
+        int x, y, size, movespeed;
         double xDouble, yDouble;
         bool playerControlled, selected, moving;
         Stats stats;

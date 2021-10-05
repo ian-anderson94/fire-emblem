@@ -16,9 +16,12 @@ class ActorManager {
         void Render(SDL_Renderer* rend, int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY);
         void Update(double dt, Map* map);
 
+        bool AnyActorsMoving();
+
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);
         unordered_set<Actor*> GetAllActors() { return actors; };
+        vector<Actor*> GetPlayerControlled();
 
     private:
         unordered_set<Actor*> actors;

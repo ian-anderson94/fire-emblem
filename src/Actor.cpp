@@ -6,6 +6,7 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     size = ts;
     stats = actorStats;
 
+    movespeed = 10;
     moving = false;
     selected = false;
     playerControlled = true;
@@ -53,7 +54,12 @@ void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, in
                     Tile* currTile = map->GetTile(x+i, y+j);
                     currX = ((x + i - camX) * size) + xOffset;
                     currY = ((y + j - camY) * size) + yOffset;
-                    coords.push_back(pair<pair<int, int>, bool>(pair<int, int>(currX, currY), currTile->IsPassable()));
+                    coords.push_back(
+                        pair<pair<int, int>, bool>(
+                            pair<int, int>(currX, currY), 
+                            currTile->IsPassable() && !currTile->IsOccupied()
+                        )
+                    );
                 }
             }
         }
@@ -70,7 +76,7 @@ void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, in
     }
 }
 
-void Actor::Update(double dt, Map* map) {
+void Actor::Update(double dt, Map* map, vector<Actor*> actors) {
     this->map = map;
 
     if (!path.empty()) {
@@ -84,18 +90,18 @@ void Actor::Update(double dt, Map* map) {
 
 void Actor::MoveToWaypoint(double dt) {
     if (waypoint.x > xDouble) {
-        xDouble += size * dt;
+        xDouble += (size * dt) / movespeed;
         xDouble = xDouble >= waypoint.x ? waypoint.x : xDouble;
     } else {
-        xDouble -= size * dt;
+        xDouble -= (size * dt) / movespeed;
         xDouble = xDouble <= waypoint.x ? waypoint.x : xDouble;
     }
 
     if (waypoint.y > y) {
-        yDouble += size * dt;
+        yDouble += (size * dt) / movespeed;
         yDouble = yDouble >= waypoint.y ? waypoint.y : yDouble;
     } else {
-        yDouble -= size * dt;
+        yDouble -= (size * dt) / movespeed;
         yDouble = yDouble <= waypoint.y ? waypoint.y : yDouble;
     }
 
@@ -107,12 +113,12 @@ void Actor::MoveToWaypoint(double dt) {
     }
 }
 
-void Actor::Move(GridLocation dst, vector<GridLocation> path) {
+void Actor::Move(vector<GridLocation> path) {
     this->path = path;
     waypoint = path[0];
     moving = true;
-    /*
-    x = dst.x;
-    y = dst.y;
-    */
+}
+
+void Actor::DoTurn() {
+
 }

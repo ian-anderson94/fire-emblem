@@ -3,6 +3,8 @@
 
 #include "Actor.h"
 #include "ActorManager.h"
+#include "BasicAI.h"
+#include "Enemy.h"
 #include "GameCursor.h"
 #include "GridLocation.h"
 #include "InformationPanel.h"
@@ -43,7 +45,8 @@ class InGame {
         TurnManager* turnManager;
 
         void RenderBackground(SDL_Renderer* rend);
-        void RenderPathingArrow(int cursorX, int cursorY, int actorX, int actorY);
+        void HandlePlayerTurn(SDL_Event event);
+        void HandleEnemyTurn(SDL_Event event);
 };
 
 #endif /* SRC_INGAME_H_ */

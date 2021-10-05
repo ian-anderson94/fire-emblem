@@ -22,12 +22,14 @@ InGame::InGame(int resX, int resY, int ts) {
     backgroundTextureFile = "./assets/mainmenu_background.png";
     backgroundTexture = TextureManager::loadTexture(backgroundTextureFile);
 
-    Actor* testActor1 = new Actor("./assets/man.png", "./assets/man.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
-    Actor* testActor2 = new Actor("./assets/man.png", "./assets/man.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
-    Actor* testActor3 = new Actor("./assets/man.png", "./assets/man.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor1 = new Actor("./assets/knight.png", "./assets/knight.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor2 = new Actor("./assets/knight.png", "./assets/knight.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor3 = new Actor("./assets/knight.png", "./assets/knight.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
+    Actor* testEnemy1 = new Enemy("./assets/man.png", "./assets/man.png", 10, 7, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3}, mapManager->GetMap(), new BasicAI(), actorManager->GetPlayerControlled());
     actorManager->Add(testActor1);
     actorManager->Add(testActor2);
     actorManager->Add(testActor3);
+    actorManager->Add(testEnemy1);
 }
 
 void InGame::Update(double dt) {
@@ -76,11 +78,22 @@ void InGame::RenderBackground(SDL_Renderer* rend) {
     SDL_RenderCopy(rend, backgroundTexture, &src, &dst);
 }
 
-void InGame::RenderPathingArrow(int cursorX, int cursorY, int actorX, int actorY) {
+int InGame::HandleEvents(SDL_Event event) {
+    if (!actorManager->AnyActorsMoving()) {
+        activeActor->IsPlayerControlled()
+            ? HandlePlayerTurn(event)
+            : HandleEnemyTurn(event);
+    }
 
+    return Enums::MMS_GameStart;
 }
 
-int InGame::HandleEvents(SDL_Event event) {
+void InGame::HandleEnemyTurn(SDL_Event event) {
+    activeActor->DoTurn();
+    turnManager->EndTurn();
+}
+
+void InGame::HandlePlayerTurn(SDL_Event event) {
     InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
 
@@ -166,7 +179,7 @@ int InGame::HandleEvents(SDL_Event event) {
 
     if (!selectedActor) {
         if (Utils::Contains(actions, Enums::ACTION_Select)) {
-            if (actorUnderCursor != nullptr && actorUnderCursor->GetPlayerControlled() == true && actorUnderCursor == activeActor) {
+            if (actorUnderCursor != nullptr && actorUnderCursor->IsPlayerControlled() == true && actorUnderCursor == activeActor) {
                 selectedActor = actorUnderCursor;
                 selectedActor->SetSelected(true);
             }
@@ -178,25 +191,23 @@ int InGame::HandleEvents(SDL_Event event) {
             Actor::Stats stats = selectedActor->GetStats();
 
             vector<GridLocation> path = pathingManager->GetPath();
+            Tile* nextTile = mapManager->GetTile(cursorPos.x, cursorPos.y);
+            Tile* prevTile = mapManager->GetTile(actorPos.x, actorPos.y);
 
-            if (mapManager->GetTile(cursorPos.x, cursorPos.y)->IsPassable()) {
-                if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
-                    selectedActor->Move(GridLocation{cursorPos.x, cursorPos.y}, path);
-                    selectedActor->SetSelected(false);
-                    selectedActor = nullptr;
-                    turnManager->EndTurn();
+            if (nextTile->IsPassable() && !nextTile->IsOccupied()) {
+                if (actorPos.x != cursorPos.x || actorPos.y != cursorPos.y) {
+                    if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
+                        nextTile->SetOccupied(true);
+                        prevTile->SetOccupied(false);
+                        selectedActor->Move(path);
+                        selectedActor->SetSelected(false);
+                        selectedActor = nullptr;
+                        turnManager->EndTurn();
+                    }
                 }
             }
         }
     }
-
-    /*
-    if (Utils::Contains(actions, Enums::ACTION_Jump)) {
-        PrintPositions();
-    }
-    */
-
-    return Enums::MMS_GameStart;
 }
 
 void InGame::PrintPositions() {
