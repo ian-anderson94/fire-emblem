@@ -9,7 +9,13 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     movespeed = 10;
     moving = false;
     selected = false;
+    planningMove = false;
+    planningAttack = false;
     playerControlled = true;
+
+    equippedWeapon = new Weapon(1);
+
+    actionsAvailable = {{Enums::TRN_Move, true}, {Enums::TRN_Attack, true}};
 
     imagePath = image;
     iconPath = icon;
@@ -28,8 +34,12 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
 }
 
 void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
-    if (selected) {
-        RenderPossibleMoves(rend, xOffset, yOffset, camX, camY, wTiles, hTiles);
+    if (planningMove) {
+        RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, stats.mov);
+    }
+
+    if (planningAttack) {
+        RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, equippedWeapon->GetRange());
     }
 
     SDL_Rect dst {
@@ -42,14 +52,14 @@ void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffse
     SDL_RenderCopy(rend, actorTexture, NULL, &dst);
 }
 
-void Actor::RenderPossibleMoves(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
+void Actor::RenderPossibleTiles(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles, int range) {
     list<pair<pair<int, int>, bool>> coords;
     int currX, currY;
 
     // Add possible moves to vector
-    for (int i = (stats.mov * -1); i <= stats.mov; i++) {
-        for (int j = (stats.mov * -1); j <= stats.mov; j++) {
-            if (abs(i) + abs(j) <= stats.mov) {
+    for (int i = (range * -1); i <= range; i++) {
+        for (int j = (range * -1); j <= range; j++) {
+            if (abs(i) + abs(j) <= range) {
                 if ((x+i-camX) >= 0 && (x+i-camX) < wTiles && (y+j-camY) >= 0 && (y+j-camY) < hTiles) {
                     Tile* currTile = map->GetTile(x+i, y+j);
                     currX = ((x + i - camX) * size) + xOffset;
@@ -121,4 +131,21 @@ void Actor::Move(vector<GridLocation> path) {
 
 void Actor::DoTurn() {
 
+}
+
+void Actor::ResetAvailableActions() {
+    actionsAvailable[Enums::TRN_Move] = false;
+    actionsAvailable[Enums::TRN_Attack] = false;
+}
+
+bool Actor::ActionsAvailable() {
+    bool available = false;
+
+    for (auto const& action : actionsAvailable) {
+        if (action.second) {
+            available = true;
+        }
+    }
+
+    return available;
 }

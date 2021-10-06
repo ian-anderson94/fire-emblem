@@ -56,6 +56,11 @@ public:
 		SCENE_Options,
 		SCENE_PauseMenu
 	};
+
+    enum TurnAction {
+        TRN_Move,
+        TRN_Attack
+    };
 };
 
 #endif /* ENUMS_H_ */

@@ -50,6 +50,7 @@ class InGame {
         void HandlePlayerTurn(SDL_Event event);
         void HandleEnemyTurn(SDL_Event event);
 
+        void EndTurn();
         void MoveCursorUp();
         void MoveCursorDown();
         void MoveCursorLeft();

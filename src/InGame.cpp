@@ -44,6 +44,10 @@ void InGame::Update(double dt) {
     actionMenu->Update(cursorPos.x, cursorPos.y);
     actorManager->Update(dt, mapManager->GetMap());
 
+    if (activeActor && !activeActor->ActionsAvailable()) {
+        EndTurn();
+    }
+
     if (turnManager->IsCurrentTurnOver()) {
         activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
 
@@ -66,7 +70,7 @@ void InGame::Render(SDL_Renderer* rend) {
     infoPanel->Render(rend);
     actionMenu->Render(rend);
 
-    if (selectedActor) {
+    if (selectedActor && selectedActor->IsPlanningMove()) {
         Actor::Position actorPos = selectedActor->GetPosition();
 
         if (cursorPos.x != actorPos.x || cursorPos.y != actorPos.y)
@@ -93,16 +97,12 @@ int InGame::HandleEvents(SDL_Event event) {
 
 void InGame::HandleEnemyTurn(SDL_Event event) {
     activeActor->DoTurn();
-    turnManager->EndTurn();
+    EndTurn();
 }
 
 void InGame::HandlePlayerTurn(SDL_Event event) {
     InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
-
-    Map::Dimensions mapSize = mapManager->GetMapSize();
-    GameCursor::Position cursorPos = cursor->GetPosition();
-    ViewPort::Position vpPos = viewPort->GetPosition();
 
     if (Utils::Contains(actions, Enums::ACTION_Up)) {
         if (actionMenu->IsActive()) {
@@ -136,13 +136,15 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
         if (actionMenu->IsActive()) {
             switch (actionMenu->GetSelection()) {
                 case Enums::ACTM_Move:
-                    selectedActor->SetSelected(true);
+                    selectedActor->SetPlanningMove(true);
                     break;
                 case Enums::ACTM_Attack:
+                    selectedActor->SetPlanningAttack(true);
                     break;
                 case Enums::ACTM_Inspect:
                     break;
                 case Enums::ACTM_End:
+                    EndTurn();
                     break;
             }
 
@@ -152,7 +154,7 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
                 selectedActor = actorUnderCursor;
                 actionMenu->SetActive(true);
             }
-        } else {
+        } else if (selectedActor->IsPlanningMove()) {
             GameCursor::Position cursorPos = cursor->GetPosition();
             Actor::Position actorPos = selectedActor->GetPosition();
             Actor::Stats stats = selectedActor->GetStats();
@@ -167,51 +169,40 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
                         nextTile->SetOccupied(true);
                         prevTile->SetOccupied(false);
                         selectedActor->Move(path);
-                        selectedActor->SetSelected(false);
-                        selectedActor = nullptr;
-                        turnManager->EndTurn();
+
+                        selectedActor->SetPlanningMove(false);
+                        selectedActor->UseAction(Enums::TRN_Move);
+
+                        if (selectedActor->ActionsAvailable()) {
+                            actionMenu->SetActive(true);
+                        }
                     }
                 }
             }
-        }
-    }
-/*
-    if (!selectedActor) {
-        if (Utils::Contains(actions, Enums::ACTION_Select)) {
-            if (actorUnderCursor != nullptr && actorUnderCursor->IsPlayerControlled() == true && actorUnderCursor == activeActor) {
-                selectedActor = actorUnderCursor;
-                selectedActor->SetSelected(true);
-            }
-        }
-    } else {
-        if (Utils::Contains(actions, Enums::ACTION_Select)) {
-            GameCursor::Position cursorPos = cursor->GetPosition();
-            Actor::Position actorPos = selectedActor->GetPosition();
-            Actor::Stats stats = selectedActor->GetStats();
+        } else if (selectedActor->IsPlanningAttack()) {
+            selectedActor->SetPlanningAttack(false);
+            selectedActor->UseAction(Enums::TRN_Attack);
 
-            vector<GridLocation> path = pathingManager->GetPath();
-            Tile* nextTile = mapManager->GetTile(cursorPos.x, cursorPos.y);
-            Tile* prevTile = mapManager->GetTile(actorPos.x, actorPos.y);
-
-            if (nextTile->IsPassable() && !nextTile->IsOccupied()) {
-                if (actorPos.x != cursorPos.x || actorPos.y != cursorPos.y) {
-                    if ((abs(cursorPos.x - actorPos.x) + abs(cursorPos.y - actorPos.y) <= stats.mov)) {
-                        nextTile->SetOccupied(true);
-                        prevTile->SetOccupied(false);
-                        selectedActor->Move(path);
-                        selectedActor->SetSelected(false);
-                        selectedActor = nullptr;
-                        turnManager->EndTurn();
-                    }
-                }
+            if (selectedActor->ActionsAvailable()) {
+                actionMenu->SetActive(true);
             }
         }
     }
-*/
+}
+
+void InGame::EndTurn() {
+    if (selectedActor) {
+        selectedActor->SetPlanningMove(false);
+        selectedActor->SetPlanningAttack(false);
+        selectedActor->ResetAvailableActions();
+        selectedActor->SetSelected(false);
+    }
+
+    selectedActor = nullptr;
+    turnManager->EndTurn();
 }
 
 void InGame::MoveCursorUp() {
-    Map::Dimensions mapSize = mapManager->GetMapSize();
     GameCursor::Position cursorPos = cursor->GetPosition();
     ViewPort::Position vpPos = viewPort->GetPosition();
 
@@ -234,9 +225,9 @@ void InGame::MoveCursorUp() {
 }
 
 void InGame::MoveCursorDown() {
-    Map::Dimensions mapSize = mapManager->GetMapSize();
     GameCursor::Position cursorPos = cursor->GetPosition();
     ViewPort::Position vpPos = viewPort->GetPosition();
+    Map::Dimensions mapSize = mapManager->GetMapSize();
 
     if (cursorPos.y + 1 == vpPos.cameraY + (vpPos.h / tileSize)) {
         if (vpPos.cameraY + (vpPos.h / tileSize) < mapSize.h) {
@@ -257,7 +248,6 @@ void InGame::MoveCursorDown() {
 }
 
 void InGame::MoveCursorLeft() {
-    Map::Dimensions mapSize = mapManager->GetMapSize();
     GameCursor::Position cursorPos = cursor->GetPosition();
     ViewPort::Position vpPos = viewPort->GetPosition();
 
@@ -280,9 +270,9 @@ void InGame::MoveCursorLeft() {
 }
 
 void InGame::MoveCursorRight() {
-    Map::Dimensions mapSize = mapManager->GetMapSize();
     GameCursor::Position cursorPos = cursor->GetPosition();
     ViewPort::Position vpPos = viewPort->GetPosition();
+    Map::Dimensions mapSize = mapManager->GetMapSize();
 
     if (cursorPos.x + 1 == vpPos.cameraX + (vpPos.w / tileSize)) {
         if (vpPos.cameraX + (vpPos.w / tileSize) < mapSize.w) {
