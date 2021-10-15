@@ -9,6 +9,7 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     movespeed = 10;
     moving = false;
     selected = false;
+    dead = false;
     planningMove = false;
     planningAttack = false;
     playerControlled = true;
@@ -26,6 +27,42 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     actorTexture = TextureManager::loadTexture(imagePath);
     iconTexture = TextureManager::loadTexture(iconPath);
 
+    spriteSheetFilePath = image;
+    spriteSheetTexture = TextureManager::loadTexture(spriteSheetFilePath);
+
+    idleRects = {
+        SDL_Rect { 0, spriteFrameDimensions * 1, spriteFrameDimensions, spriteFrameDimensions},
+        SDL_Rect { 0, spriteFrameDimensions * 2, spriteFrameDimensions, spriteFrameDimensions},
+        SDL_Rect { 0, spriteFrameDimensions * 3, spriteFrameDimensions, spriteFrameDimensions}
+    };
+
+    walkLeftRects = {
+        SDL_Rect { spriteFrameDimensions * 1, spriteFrameDimensions * 0, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 1, spriteFrameDimensions * 1, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 1, spriteFrameDimensions * 2, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 1, spriteFrameDimensions * 3, spriteFrameDimensions, spriteFrameDimensions }
+    };
+
+    walkDownRects = {
+        SDL_Rect { spriteFrameDimensions * 2, spriteFrameDimensions * 0, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 2, spriteFrameDimensions * 1, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 2, spriteFrameDimensions * 2, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 2, spriteFrameDimensions * 3, spriteFrameDimensions, spriteFrameDimensions }
+    };
+
+    walkUpRects = {
+        SDL_Rect { spriteFrameDimensions * 3, spriteFrameDimensions * 0, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 3, spriteFrameDimensions * 1, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 3, spriteFrameDimensions * 2, spriteFrameDimensions, spriteFrameDimensions },
+        SDL_Rect { spriteFrameDimensions * 3, spriteFrameDimensions * 3, spriteFrameDimensions, spriteFrameDimensions }
+    };
+
+    selectedRects = {
+        SDL_Rect { spriteFrameDimensions * 4, spriteFrameDimensions * 1, spriteFrameDimensions, spriteFrameDimensions},
+        SDL_Rect { spriteFrameDimensions * 4, spriteFrameDimensions * 2, spriteFrameDimensions, spriteFrameDimensions},
+        SDL_Rect { spriteFrameDimensions * 4, spriteFrameDimensions * 3, spriteFrameDimensions, spriteFrameDimensions}
+    };
+
     SDL_SetTextureBlendMode(passableTileTexture, SDL_BLENDMODE_BLEND);
     SDL_SetTextureBlendMode(impassableTileTexture, SDL_BLENDMODE_BLEND);
 
@@ -34,22 +71,26 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
 }
 
 void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
-    if (planningMove) {
-        RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, stats.mov);
+    if (!dead) {
+        if (planningMove) {
+            RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, stats.mov);
+        }
+
+        if (planningAttack) {
+            RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, equippedWeapon->GetRange());
+        }
+
+        SDL_Rect src = GetSrcRect();
+
+        SDL_Rect dst {
+            (int)((xDouble - camX) * size) + xOffset, 
+            (int)((yDouble - camY) * size) + yOffset, 
+            size, 
+            size
+        };
+
+        SDL_RenderCopy(rend, actorTexture, &src, &dst);
     }
-
-    if (planningAttack) {
-        RenderPossibleTiles(rend, xOffset, yOffset, camX, camY, wTiles, hTiles, equippedWeapon->GetRange());
-    }
-
-    SDL_Rect dst {
-        (int)((xDouble - camX) * size) + xOffset, 
-        (int)((yDouble - camY) * size) + yOffset, 
-        size, 
-        size
-    };
-
-    SDL_RenderCopy(rend, actorTexture, NULL, &dst);
 }
 
 void Actor::RenderPossibleTiles(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles, int range) {
@@ -134,8 +175,8 @@ void Actor::DoTurn() {
 }
 
 void Actor::ResetAvailableActions() {
-    actionsAvailable[Enums::TRN_Move] = false;
-    actionsAvailable[Enums::TRN_Attack] = false;
+    actionsAvailable[Enums::TRN_Move] = true;
+    actionsAvailable[Enums::TRN_Attack] = true;
 }
 
 bool Actor::ActionsAvailable() {
@@ -148,4 +189,35 @@ bool Actor::ActionsAvailable() {
     }
 
     return available;
+}
+
+void Actor::Attack(Actor* target) {
+    int damage = -1;
+
+    target->ChangeHealth(damage);
+
+    if (target->GetStats().health <= 0) {
+        target->Kill();
+    }
+}
+
+SDL_Rect Actor::GetSrcRect() {
+    int frame = 0;
+    SDL_Rect rect;
+
+    if (moving) {
+        // Walking
+        frame = AnimationManager::GetInstance()->GetFrameIndex(4);
+        rect = walkLeftRects[frame];
+    } else if (planningAttack || planningMove) {
+        // Selected
+        frame = AnimationManager::GetInstance()->GetFrameIndex(3);
+        rect = selectedRects[frame];
+    } else {
+        // Idle
+        frame = AnimationManager::GetInstance()->GetFrameIndex(3);
+        rect = idleRects[frame];
+    }
+
+    return rect;
 }

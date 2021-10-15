@@ -10,6 +10,7 @@ int main(int argc, char* argv[]) {
 	Uint32 curr_t = 0;
 
 	game = new Game();
+
 	resolutionManager = new ResolutionManager(argc, argv);
 
 	game->init("GAME TITLE", resolutionManager);
@@ -24,8 +25,11 @@ int main(int argc, char* argv[]) {
 				dt = minimum_t;
 
 			game->handleEvents();
+
 			game->update(dt / 1000.f);
+
 			game->render(Game::renderer);
+
 
 			last_t = curr_t;
 		} else {

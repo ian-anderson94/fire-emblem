@@ -10,7 +10,8 @@ ControlMapper::ControlMapper() {
 			{ SDLK_s, Enums::Action::ACTION_Down },
 			{ SDLK_SPACE, Enums::Action::ACTION_Jump },
 			{ SDLK_RETURN, Enums::Action::ACTION_Select },
-			{ SDLK_ESCAPE, Enums::Action::ACTION_Quit }
+			{ SDLK_ESCAPE, Enums::Action::ACTION_Quit },
+            { SDLK_BACKSPACE, Enums::ACTION_Cancel }
 	};
 
 	controlMap = defaultControlMap;

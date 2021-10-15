@@ -60,3 +60,11 @@ void Map::PrintLayout() {
         cout << endl;
     }
 }
+
+void Map::SetTilesUnoccupied() {
+    for (int col = 0; col < tileLayout.size(); col++) {
+        for (int row = 0; row < tileLayout[col].size(); row++) {
+            tiles[col][row]->SetOccupied(false);
+        }
+    }
+}

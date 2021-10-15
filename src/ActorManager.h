@@ -22,6 +22,7 @@ class ActorManager {
         Actor* GetActor(int xPos, int yPos);
         unordered_set<Actor*> GetAllActors() { return actors; };
         vector<Actor*> GetPlayerControlled();
+        vector<Actor*> GetEnemyControlled();
 
     private:
         unordered_set<Actor*> actors;

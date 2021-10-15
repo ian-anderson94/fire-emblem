@@ -11,6 +11,7 @@ public:
 		ACTION_Down,
 		ACTION_Select,
 		ACTION_Quit,
+        ACTION_Cancel,
 		ACTION_End
 	};
 
@@ -19,6 +20,16 @@ public:
         ACTM_Attack,
         ACTM_Inspect,
         ACTM_End,
+    };
+
+    enum ClassType {
+        CLS_Warrior,
+        CLS_Paladin,
+        CLS_Hunter,
+        CLS_Rogue,
+        CLS_Mage,
+        CLS_Priest,
+        CLS_LAST
     };
 
 	enum CommandLineFlag {
@@ -32,6 +43,16 @@ public:
         DIR_Down,
         DIR_Left,
         DIR_Right
+    };
+
+    enum HubSelection {
+        HUB_Recruitment,
+        /*
+        HUB_Blacksmith,
+        HUB_Shop,
+        HUB_Graveyard,
+        */
+        HUB_Embark
     };
 
     enum InfoPanelLocation {
@@ -54,8 +75,36 @@ public:
 		SCENE_MainMenu,
 		SCENE_InGame,
 		SCENE_Options,
-		SCENE_PauseMenu
+		SCENE_PauseMenu,
+        SCN_HubMenu,
+        SCN_HubRecruitment
 	};
+
+    enum SpriteSheetFrames {
+        SSF_Icon,
+        SSF_Idle1,
+        SSF_Idle2,
+        SSF_Idle3,
+        SSF_WalkLeft1,
+        SSF_WalkLeft2,
+        SSF_WalkLeft3,
+        SSF_WalkLeft4,
+        SSF_WalkRight1,
+        SSF_WalkRight2,
+        SSF_WalkRight3,
+        SSF_WalkRight4,
+        SSF_WalkUp1,
+        SSF_WalkUp2,
+        SSF_WalkUp3,
+        SSF_WalkUp4,
+        SSF_WalkDown1,
+        SSF_WalkDown2,
+        SSF_WalkDown3,
+        SSF_WalkDown4,
+        SSF_Selected1,
+        SSF_Selected2,
+        SSF_Selected3
+    };
 
     enum TurnAction {
         TRN_Move,

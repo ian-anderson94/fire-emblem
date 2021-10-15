@@ -60,6 +60,18 @@ vector<Actor*> ActorManager::GetPlayerControlled() {
     return playerControlledActors;
 }
 
+vector<Actor*> ActorManager::GetEnemyControlled() {
+    vector<Actor*> playerControlledActors;
+
+    for (auto const& actor : actors) {
+        if (!actor->IsPlayerControlled()) {
+            playerControlledActors.push_back(actor);
+        }
+    }
+
+    return playerControlledActors;
+}
+
 bool ActorManager::AnyActorsMoving() {
     bool anyMoving = false;
 

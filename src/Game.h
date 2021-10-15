@@ -4,15 +4,16 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 
-#include "MainMenu.h"
+#include "AnimationManager.h"
+#include "Background.h"
 #include "Enums.h"
+#include "HubScreen.h"
+#include "InGame.h"
+#include "InputManager.h"
+#include "MainMenu.h"
 #include "ResolutionManager.h"
 #include "TextManager.h"
-#include "AnimationManager.h"
-#include "InGame.h"
-//#include "EntityManager.h"
 
-#include "InputManager.h"
 #include <iostream>
 
 class Game {
@@ -28,20 +29,23 @@ public:
 
 	bool getIsRunning() { return isRunning; };
 
+    static Background* background;
+    static HubScreen* hubScreen;
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
 	static MainMenu* mainMenu;
     static TextManager* textManager;
     static InGame* inGame;
-	//static EntityManager* entityManager;
 
-	static int currScene;
+	//static int currScene;
 
 	static const int tileSize = 64;
 
 private:
 	bool isRunning;
 	SDL_Window* window;
+
+    Enums::Scene currScene;
 
 	void updateScene(int menuSelection);
 

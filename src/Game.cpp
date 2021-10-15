@@ -3,16 +3,19 @@
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
+Background* Game::background;
 InGame* Game::inGame;
 TextManager* Game::textManager;
 MainMenu* Game::mainMenu;
-//EntityManager* Game::entityManager;
+HubScreen* Game::hubScreen;
 
-int Game::currScene = Enums::SCENE_MainMenu;
+//int Game::currScene = Enums::SCENE_MainMenu;
 
 Game::Game() {
 	isRunning = true;
 	window = NULL;
+
+    currScene = Enums::SCENE_MainMenu;
 }
 
 Game::~Game() {
@@ -54,10 +57,14 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
 		isRunning = false;
 	}
 
+    int xResolution = resolutionManager->GetFlag(Enums::CLF_xResolution);
+    int yResolution = resolutionManager->GetFlag(Enums::CLF_yResolution);
+
+    Game::hubScreen = new HubScreen(xResolution, yResolution, tileSize);
+    Game::background = new Background(xResolution, yResolution);
     Game::textManager = new TextManager();
-	Game::mainMenu = new MainMenu(resolutionManager->GetFlag(Enums::CLF_xResolution), resolutionManager->GetFlag(Enums::CLF_yResolution), textManager);
-    Game::inGame = new InGame(resolutionManager->GetFlag(Enums::CLF_xResolution), resolutionManager->GetFlag(Enums::CLF_yResolution), tileSize);
-	//Game::entityManager = new EntityManager(tileSize, Globals::RESOLUTION_X, Globals::RESOLUTION_Y);
+	Game::mainMenu = new MainMenu(xResolution, yResolution, textManager);
+    Game::inGame = new InGame(xResolution, yResolution, tileSize);
 }
 
 void Game::update(double dt) {
@@ -66,13 +73,12 @@ void Game::update(double dt) {
 
     AnimationManager::GetInstance()->TickAnimationTimer(dt);
 
-	switch(Game::currScene) {
+	switch(currScene) {
 		case Enums::SCENE_MainMenu:
             mainMenu->update(dt);
 			break;
 		case Enums::SCENE_InGame:
             inGame->Update(dt);
-			//Game::entityManager->update(dt);
 			break;
 		case Enums::SCENE_PauseMenu:
 			break;
@@ -84,16 +90,20 @@ void Game::update(double dt) {
 void Game::render(SDL_Renderer* rend) {
 	SDL_RenderClear(rend);
 
-	switch(Game::currScene) {
+    background->Render(rend);
+
+	switch(currScene) {
 		case Enums::SCENE_MainMenu:
 			Game::mainMenu->render(rend);
 			break;
 		case Enums::SCENE_InGame:
             Game::inGame->Render(rend);
-			//Game::entityManager->render(rend);
 			break;
 		case Enums::SCENE_PauseMenu:
 			break;
+        case Enums::SCN_HubMenu:
+            Game::hubScreen->Render(rend);
+            break;
 		default:
 			break;
 	}
@@ -101,13 +111,13 @@ void Game::render(SDL_Renderer* rend) {
 	SDL_RenderPresent(rend);
 }
 
+/*
 void Game::handleEvents() {
-	switch(Game::currScene) {
+	switch(currScene) {
 	case Enums::SCENE_MainMenu:
 		updateScene(mainMenu->handleEvents(Game::event));
 		break;
 	case Enums::SCENE_InGame:
-		//updateScene(entityManager->handleEvents(Game::event));
         updateScene(inGame->HandleEvents(Game::event));
 		break;
 	case Enums::SCENE_PauseMenu:
@@ -115,6 +125,23 @@ void Game::handleEvents() {
 	default:
 		break;
 	}
+}
+*/
+
+void Game::handleEvents() {
+    switch (currScene) {
+        case Enums::SCENE_MainMenu:
+            currScene = mainMenu->handleEvents(Game::event);
+            break;
+        case Enums::SCENE_InGame:
+            currScene = inGame->HandleEvents(Game::event);
+            break;
+        case Enums::SCN_HubMenu:
+            currScene = hubScreen->HandleEvents(Game::event);
+            break;
+        default:
+            throw invalid_argument("Error in Game::HandleEvents\n");
+    }
 }
 
 void Game::clean() {
@@ -126,13 +153,13 @@ void Game::clean() {
 void Game::updateScene(int menuSelection) {
 	switch (menuSelection) {
 	case Enums::MMS_MainMenu:
-		Game::currScene = Enums::SCENE_MainMenu;
+		currScene = Enums::SCENE_MainMenu;
 		break;
 	case Enums::MMS_GameStart:
-		Game::currScene = Enums::SCENE_InGame;
+		currScene = Enums::SCENE_InGame;
 		break;
 	case Enums::MMS_Options:
-		Game::currScene = Enums::SCENE_Options;
+		currScene = Enums::SCENE_Options;
 		break;
 	case Enums::MMS_Exit:
 		isRunning = false;

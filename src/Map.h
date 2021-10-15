@@ -23,6 +23,7 @@ class Map {
         };
 
         Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> tileDefinitions, int size);
+        void SetTilesUnoccupied();
         vector<Tile*> GetTilesInViewport(int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY);
         Tile* GetTile(int xPos, int yPos);
         vector<vector<string>> GetLayout() { return tileLayout; };

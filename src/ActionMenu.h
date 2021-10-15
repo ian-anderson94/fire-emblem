@@ -17,7 +17,7 @@ class ActionMenu {
         void IncrementSelection();
         void DecrementSelection();
         
-        void SetActive(bool val) { active = val; };
+        void SetActive(bool val) { active = val; currSelection = Enums::ACTM_Move; };
         bool IsActive() { return active; };
         int GetSelection() { return currSelection; };
 

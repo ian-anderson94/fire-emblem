@@ -22,7 +22,7 @@ class InGame {
         InGame(int resX, int resY, int ts);
         void Update(double dt);
         void Render(SDL_Renderer* rend);
-        int HandleEvents(SDL_Event event);
+        Enums::Scene HandleEvents(SDL_Event event);
 
         void PrintPositions();
 
@@ -41,12 +41,9 @@ class InGame {
         GameCursor* cursor;
         PathingManager* pathingManager;
         ViewPort* viewPort;
-        const char* backgroundTextureFile;
-        SDL_Texture* backgroundTexture;
         MapManager* mapManager;
         TurnManager* turnManager;
 
-        void RenderBackground(SDL_Renderer* rend);
         void HandlePlayerTurn(SDL_Event event);
         void HandleEnemyTurn(SDL_Event event);
 

@@ -1,13 +1,13 @@
 empty {
     symbol=.
-    image=emptyTile
+    image=PH_grass1
     passable=true
     attributes=[]
 }
 
 pillar {
     symbol=p
-    image=pillarTile
+    image=PH_pillar1
     passable=false
     attributes=[def 1, mov -1]
 }

@@ -20,17 +20,16 @@ InGame::InGame(int resX, int resY, int ts) {
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     turnManager = new TurnManager(resX, resY, ts);
 
-    backgroundTextureFile = "./assets/mainmenu_background.png";
-    backgroundTexture = TextureManager::loadTexture(backgroundTextureFile);
-
-    Actor* testActor1 = new Actor("./assets/knight.png", "./assets/knight.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
-    Actor* testActor2 = new Actor("./assets/knight.png", "./assets/knight.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
-    Actor* testActor3 = new Actor("./assets/knight.png", "./assets/knight.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3});
-    Actor* testEnemy1 = new Enemy("./assets/man.png", "./assets/man.png", 10, 7, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 3}, mapManager->GetMap(), new BasicAI(), actorManager->GetPlayerControlled());
+    Actor* testActor1 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor2 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
+    Actor* testActor3 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
+    Actor* testEnemy1 = new Enemy("./assets/PH_mage.png", "./assets/man.png", 10, 7, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3}, mapManager->GetMap(), new BasicAI(), actorManager->GetPlayerControlled());
     actorManager->Add(testActor1);
     actorManager->Add(testActor2);
     actorManager->Add(testActor3);
     actorManager->Add(testEnemy1);
+
+    mapManager->SetTilesOccupied(actorManager->GetAllActors());
 }
 
 void InGame::Update(double dt) {
@@ -48,7 +47,11 @@ void InGame::Update(double dt) {
         EndTurn();
     }
 
-    if (turnManager->IsCurrentTurnOver()) {
+    // Wait until all movement is finished before starting next turn. The incorrect tiles are set as occupied if 
+    // the turn ends while an actor is in transit.
+    if (turnManager->IsCurrentTurnOver() && !actorManager->AnyActorsMoving()) {
+        mapManager->SetTilesOccupied(actorManager->GetAllActors());
+
         activeActor = turnManager->GetNextTurn(actorManager->GetAllActors());
 
         Actor::Position actorPos = activeActor->GetPosition();
@@ -61,7 +64,6 @@ void InGame::Render(SDL_Renderer* rend) {
     ViewPort::Position pos = viewPort->GetPosition();
     GameCursor::Position cursorPos = cursor->GetPosition();
 
-    RenderBackground(rend);
     mapManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
     viewPort->Render(rend);
     actorManager->Render(rend, pos.x, pos.y, pos.tilesX, pos.tilesY, pos.cameraX, pos.cameraY);
@@ -78,24 +80,20 @@ void InGame::Render(SDL_Renderer* rend) {
     }
 }
 
-void InGame::RenderBackground(SDL_Renderer* rend) {
-    SDL_Rect src {0, 0, resolutionX, resolutionY};
-    SDL_Rect dst {0, 0, resolutionX, resolutionY};
-
-    SDL_RenderCopy(rend, backgroundTexture, &src, &dst);
-}
-
-int InGame::HandleEvents(SDL_Event event) {
+Enums::Scene InGame::HandleEvents(SDL_Event event) {
     if (!actorManager->AnyActorsMoving()) {
         activeActor->IsPlayerControlled()
             ? HandlePlayerTurn(event)
             : HandleEnemyTurn(event);
     }
 
-    return Enums::MMS_GameStart;
+    return Enums::SCENE_InGame;
 }
 
 void InGame::HandleEnemyTurn(SDL_Event event) {
+    Actor::Position actorPos = activeActor->GetPosition();
+    mapManager->GetTile(actorPos.x, actorPos.y)->SetOccupied(false);
+
     activeActor->DoTurn();
     EndTurn();
 }
@@ -180,12 +178,34 @@ void InGame::HandlePlayerTurn(SDL_Event event) {
                 }
             }
         } else if (selectedActor->IsPlanningAttack()) {
-            selectedActor->SetPlanningAttack(false);
-            selectedActor->UseAction(Enums::TRN_Attack);
+            if (actorUnderCursor && !actorUnderCursor->IsPlayerControlled()) {
+                selectedActor->Attack(actorUnderCursor);
 
-            if (selectedActor->ActionsAvailable()) {
-                actionMenu->SetActive(true);
+                selectedActor->SetPlanningAttack(false);
+                selectedActor->UseAction(Enums::TRN_Attack);
+
+                if (selectedActor->ActionsAvailable()) {
+                    actionMenu->SetActive(true);
+                }
             }
+        }
+    }
+
+    if (Utils::Contains(actions, Enums::ACTION_Cancel)) {
+        if (selectedActor) {
+            if (selectedActor->IsPlanningMove() || selectedActor->IsPlanningAttack()) {
+                selectedActor->SetPlanningAttack(false);
+                selectedActor->SetPlanningMove(false);
+                actionMenu->SetActive(true);
+            } else if (actionMenu->IsActive()) {
+                actionMenu->SetActive(false);
+                selectedActor->SetSelected(false);
+                selectedActor = nullptr;
+            }
+        } else {
+            Actor::Position actorPos = activeActor->GetPosition();
+            viewPort->MoveToActor(actorPos.x, actorPos.y);
+            cursor->MoveToActor(actorPos.x, actorPos.y);
         }
     }
 }

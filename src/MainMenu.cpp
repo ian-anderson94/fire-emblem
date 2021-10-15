@@ -24,9 +24,7 @@ MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
 
     MainMenu::textManager = textManager;
 
-	backgroundTexture = TextureManager::loadTexture("./assets/mainmenu_background.png");
     selectorTexture = TextureManager::loadTexture("./assets/selector_arrow.png");
-	//selectionsTexture = TextureManager::loadTexture("assets/mainmenu_selections.png");
 	selectionsTexture = nullptr;
 }
 
@@ -35,7 +33,6 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::render(SDL_Renderer* rend){
-	renderBackground(rend);
 	renderMenu(rend);
     renderSelector(rend);
 }
@@ -44,11 +41,11 @@ void MainMenu::update(double dt) {
     // Nothing atm
 }
 
-int MainMenu::handleEvents(SDL_Event event) {
+Enums::Scene MainMenu::handleEvents(SDL_Event event) {
 	InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
 
-	int menuSelectionValue = Enums::MMS_MainMenu;
+	Enums::Scene menuSelectionValue = Enums::SCENE_MainMenu;
 
 	if (Globals::Contains(actions, Enums::ACTION_Up)) {
 		currSelection--;
@@ -61,20 +58,22 @@ int MainMenu::handleEvents(SDL_Event event) {
 		currSelection = boundCurrSelection();
 	}
 	else if (Globals::Contains(actions, Enums::ACTION_Select)) {
-		menuSelectionValue = currSelection;
+		menuSelectionValue = MapMainMenuSelectionToScene();
 	}
 
 	return menuSelectionValue;
 }
 
-void MainMenu::renderBackground(SDL_Renderer* rend) {
-	srcRect.w = destRect.w = resolutionX;
-	srcRect.h = destRect.h = resolutionY;
+Enums::Scene MainMenu::MapMainMenuSelectionToScene() {
+    Enums::Scene scene;
 
-	srcRect.x = srcRect.y = 0;
-	destRect.x = destRect.y = 0;
+    switch (currSelection) {
+        case Enums::MMS_GameStart:
+            scene = Enums::SCN_HubMenu;
+            break;
+    }
 
-	SDL_RenderCopy(rend, backgroundTexture, &srcRect, &destRect);
+    return scene;
 }
 
 void MainMenu::renderMenu(SDL_Renderer* rend) {

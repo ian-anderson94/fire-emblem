@@ -20,12 +20,11 @@ public:
 
 	void update(double dt);
 	void render(SDL_Renderer* rend);
-	int handleEvents(SDL_Event event);
+	Enums::Scene handleEvents(SDL_Event event);
 
 private:
 	SDL_Rect srcRect;
 	SDL_Rect destRect;
-	SDL_Texture* backgroundTexture;
 	SDL_Texture* selectionsTexture;
     SDL_Texture* selectorTexture;
 
@@ -39,9 +38,9 @@ private:
     int selectorVerticalOffset;
     int mainMenuTextSize;
 
-	void renderBackground(SDL_Renderer* rend);
 	void renderMenu(SDL_Renderer* rend);
     void renderSelector(SDL_Renderer* rend);
+    Enums::Scene MapMainMenuSelectionToScene();
 
 	int boundCurrSelection();
 };
