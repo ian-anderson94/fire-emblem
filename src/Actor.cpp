@@ -1,11 +1,12 @@
 #include "Actor.h"
 
-Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats) {
+Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats, Enums::ClassType classType) {
     x = xDouble = xPos;
     y = yDouble = yPos;
     size = ts;
     stats = actorStats;
 
+    level = 1;
     movespeed = 10;
     moving = false;
     selected = false;
@@ -13,6 +14,8 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     planningMove = false;
     planningAttack = false;
     playerControlled = true;
+
+    name = GetRandomName();
 
     equippedWeapon = new Weapon(1);
 
@@ -68,6 +71,16 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
 
     SDL_SetTextureAlphaMod(passableTileTexture, 160);
     SDL_SetTextureAlphaMod(impassableTileTexture, 160);
+}
+
+void Actor::Render(SDL_Renderer* rend, int sizeFactor) {
+    SDL_Rect src = GetSrcRect();
+
+    SDL_Rect dst = (sizeFactor == 0) 
+        ? SDL_Rect { x, y, size, size}
+        : SDL_Rect { x, y, size * sizeFactor, size * sizeFactor};
+
+    SDL_RenderCopy(rend, actorTexture, &src, &dst);
 }
 
 void Actor::RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles) {
@@ -207,17 +220,21 @@ SDL_Rect Actor::GetSrcRect() {
 
     if (moving) {
         // Walking
-        frame = AnimationManager::GetInstance()->GetFrameIndex(4);
+        frame = AnimationManager::GetInstance()->GetFrameIndex(walkLeftRects.size());
         rect = walkLeftRects[frame];
     } else if (planningAttack || planningMove) {
         // Selected
-        frame = AnimationManager::GetInstance()->GetFrameIndex(3);
+        frame = AnimationManager::GetInstance()->GetFrameIndex(selectedRects.size());
         rect = selectedRects[frame];
     } else {
         // Idle
-        frame = AnimationManager::GetInstance()->GetFrameIndex(3);
+        frame = AnimationManager::GetInstance()->GetFrameIndex(idleRects.size());
         rect = idleRects[frame];
     }
 
     return rect;
+}
+
+string Actor::GetRandomName() {
+    return "Timmy";
 }

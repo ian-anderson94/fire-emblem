@@ -14,8 +14,8 @@
 
 Actor* ClassDefinitions::CreateWarrior(int tileSize) {
     return new Actor(
-        "./assets/knight.png",
-        "./assets/knight.png",
+        "./assets/PH_warrior.png",
+        "./assets/PH_warrior.png",
         0,
         0,
         tileSize,

@@ -14,6 +14,11 @@ ControlMapper::ControlMapper() {
             { SDLK_BACKSPACE, Enums::ACTION_Cancel }
 	};
 
+    buttonControlMap = {
+        { SDL_BUTTON_LEFT, Enums::ACTION_Select },
+        { SDL_BUTTON_RIGHT, Enums::ACTION_Cancel }
+    };
+
 	controlMap = defaultControlMap;
 }
 
@@ -28,12 +33,16 @@ ControlMapper* ControlMapper::getInstance() {
 	return instance;
 }
 
-std::unordered_set<int> ControlMapper::getActionsFromInput(std::unordered_set<SDL_Keycode> input) {
+std::unordered_set<int> ControlMapper::getActionsFromInput(std::unordered_set<SDL_Keycode> input, std::unordered_set<Uint8> buttonInput) {
 	std::unordered_set<int> actions;
 
 	for (auto& in : input) {
 		actions.insert(controlMap[in]);
 	}
+
+    for (auto& in : buttonInput) {
+        actions.insert(buttonControlMap[in]);
+    }
 
 	return actions;
 }

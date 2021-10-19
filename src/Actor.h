@@ -26,7 +26,8 @@ class Actor {
             int x, y, size;
         };
 
-        Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats);
+        Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats, Enums::ClassType classType = Enums::CLS_Warrior);
+        void Render(SDL_Renderer* rend, int sizeFactor = 0);
         void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
         virtual void Update(double dt, Map* map, vector<Actor*> actor);
 
@@ -40,11 +41,14 @@ class Actor {
         bool IsPlanningAttack() { return planningAttack; };
         bool IsPlayerControlled() { return playerControlled; };
         bool ActionsAvailable();
+        string GetName() { return name; };
+        int GetLevel() { return level; };
         void ResetAvailableActions();
         void UseAction(Enums::TurnAction action) { actionsAvailable[action] = false; };
         void SetSelected(bool val) { selected = val; };
         void SetPlanningMove(bool val) { planningMove = val; };
         void SetPlanningAttack(bool val) { planningAttack = val; };
+        void SetPosition(int x, int y) { this->x = x; this->y = y; };
         void Move(vector<GridLocation> path);
         void Attack(Actor* target);
         void ChangeHealth(int delta) { stats.health += delta; };
@@ -53,10 +57,12 @@ class Actor {
         virtual void DoTurn();
 
     protected:
-        int x, y, size, movespeed;
+        int x, y, size, movespeed, level;
         double xDouble, yDouble;
         bool playerControlled, dead, selected, moving, planningMove, planningAttack;
         Stats stats;
+        Enums::ClassType classType;
+        string name;
 
         unordered_map<Enums::TurnAction, bool> actionsAvailable;
         vector<GridLocation> path;
@@ -87,6 +93,7 @@ class Actor {
         void RenderPossibleTiles(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles, int range);
         void MoveToWaypoint(double dt);
         SDL_Rect GetSrcRect();
+        string GetRandomName();
 };
 
 #endif /* SRC_ACTOR_H_ */

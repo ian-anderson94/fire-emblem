@@ -4,12 +4,11 @@ SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
 Background* Game::background;
-InGame* Game::inGame;
-TextManager* Game::textManager;
-MainMenu* Game::mainMenu;
 HubScreen* Game::hubScreen;
-
-//int Game::currScene = Enums::SCENE_MainMenu;
+InGame* Game::inGame;
+MainMenu* Game::mainMenu;
+RecruitmentScreen* Game::recruitmentScreen;
+TextManager* Game::textManager;
 
 Game::Game() {
 	isRunning = true;
@@ -60,11 +59,12 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
     int xResolution = resolutionManager->GetFlag(Enums::CLF_xResolution);
     int yResolution = resolutionManager->GetFlag(Enums::CLF_yResolution);
 
-    Game::hubScreen = new HubScreen(xResolution, yResolution, tileSize);
     Game::background = new Background(xResolution, yResolution);
-    Game::textManager = new TextManager();
-	Game::mainMenu = new MainMenu(xResolution, yResolution, textManager);
+    Game::hubScreen = new HubScreen(xResolution, yResolution, tileSize);
     Game::inGame = new InGame(xResolution, yResolution, tileSize);
+    Game::mainMenu = new MainMenu(xResolution, yResolution, textManager);
+    Game::recruitmentScreen = new RecruitmentScreen(xResolution, yResolution, tileSize);
+    Game::textManager = new TextManager();
 }
 
 void Game::update(double dt) {
@@ -104,29 +104,14 @@ void Game::render(SDL_Renderer* rend) {
         case Enums::SCN_HubMenu:
             Game::hubScreen->Render(rend);
             break;
+        case Enums::SCN_HubRecruitment:
+            Game::recruitmentScreen->Render(rend);
 		default:
 			break;
 	}
 
 	SDL_RenderPresent(rend);
 }
-
-/*
-void Game::handleEvents() {
-	switch(currScene) {
-	case Enums::SCENE_MainMenu:
-		updateScene(mainMenu->handleEvents(Game::event));
-		break;
-	case Enums::SCENE_InGame:
-        updateScene(inGame->HandleEvents(Game::event));
-		break;
-	case Enums::SCENE_PauseMenu:
-		break;
-	default:
-		break;
-	}
-}
-*/
 
 void Game::handleEvents() {
     switch (currScene) {
@@ -138,6 +123,9 @@ void Game::handleEvents() {
             break;
         case Enums::SCN_HubMenu:
             currScene = hubScreen->HandleEvents(Game::event);
+            break;
+        case Enums::SCN_HubRecruitment:
+            currScene = recruitmentScreen->HandleEvents(Game::event);
             break;
         default:
             throw invalid_argument("Error in Game::HandleEvents\n");

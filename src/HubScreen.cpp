@@ -6,7 +6,7 @@ HubScreen::HubScreen(int resX, int resY, int tileSize) {
     this->tileSize = tileSize;
 
     currSelection = Enums::HUB_Embark;
-    recruitmentImagePath = "./assets/recruitment_hall.png";
+    recruitmentImagePath = "./assets/PH_house.png";
     embarkImagePath = "./assets/embark.png";
 
     selectionTextures.insert(pair<Enums::HubSelection, SDL_Texture*>(Enums::HUB_Recruitment, TextureManager::loadTexture(recruitmentImagePath)));

@@ -11,6 +11,7 @@
 #include "InGame.h"
 #include "InputManager.h"
 #include "MainMenu.h"
+#include "RecruitmentScreen.h"
 #include "ResolutionManager.h"
 #include "TextManager.h"
 
@@ -31,11 +32,12 @@ public:
 
     static Background* background;
     static HubScreen* hubScreen;
-	static SDL_Renderer* renderer;
-	static SDL_Event event;
-	static MainMenu* mainMenu;
-    static TextManager* textManager;
     static InGame* inGame;
+	static MainMenu* mainMenu;
+    static RecruitmentScreen* recruitmentScreen;
+    static SDL_Renderer* renderer;
+	static SDL_Event event;
+    static TextManager* textManager;
 
 	//static int currScene;
 

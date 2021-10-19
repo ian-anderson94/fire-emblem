@@ -21,14 +21,20 @@ InputManager* InputManager::getInstance() {
 void InputManager::update(SDL_Event event) {
 	std::unordered_set<SDL_Keycode> tempDown;
 	std::unordered_set<SDL_Keycode> tempUp;
+    std::unordered_set<Uint8> tempButtonDown;
+    std::unordered_set<Uint8> tempButtonUp;
 	keysDown = tempDown;
 	keysUp = tempUp;
+    buttonsDown = tempButtonDown;
+    buttonsUp = tempButtonUp;
 
 	while(SDL_PollEvent(&event) != 0) {
 		switch(event.type) {
-		case SDL_KEYDOWN: setKeyDown(event.key.keysym.sym); break;
-		case SDL_KEYUP: setKeyUp(event.key.keysym.sym); break;
-		case SDL_QUIT: running = false; break;
+            case SDL_KEYDOWN: setKeyDown(event.key.keysym.sym); break;
+            case SDL_KEYUP: setKeyUp(event.key.keysym.sym); break;
+            case SDL_MOUSEBUTTONDOWN: setMouseDown(event.button.button); break;
+            case SDL_MOUSEBUTTONUP: setMouseUp(event.button.button); break;
+            case SDL_QUIT: running = false; break;
 		}
 	}
 
@@ -38,7 +44,7 @@ void InputManager::update(SDL_Event event) {
 
 	for (auto& key : keysUp) {
 		keysPressed[key] = false;
-	}
+    }
 }
 
 std::unordered_set<int> InputManager::getPressedKeys() {
@@ -55,16 +61,16 @@ std::unordered_set<int> InputManager::getPressedKeys() {
 
 std::unordered_set<int> InputManager::getActionsDown() {
 	ControlMapper* controls = ControlMapper::getInstance();
-	return controls->getActionsFromInput(keysDown);
+	return controls->getActionsFromInput(keysDown, buttonsDown);
 }
 
 std::unordered_set<int> InputManager::getActionsUp() {
 	ControlMapper* controls = ControlMapper::getInstance();
-	return controls->getActionsFromInput(keysUp);
+	return controls->getActionsFromInput(keysUp, buttonsUp);
 }
 
 std::unordered_set<int> InputManager::getActionsPressed() {
 	ControlMapper* controls = ControlMapper::getInstance();
-	return controls->getActionsFromInput(getPressedKeys());
+	return controls->getActionsFromInput(getPressedKeys(), buttonsDown);
 }
 

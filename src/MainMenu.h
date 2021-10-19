@@ -1,16 +1,19 @@
 #ifndef SRC_MAINMENU_H_
 #define SRC_MAINMENU_H_
 
+#include "AnimationManager.h"
+#include "MainMenuButton.h"
+#include "Enums.h"
+#include "InputManager.h"
+#include "Mouse.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
 #include "TextManager.h"
-#include "AnimationManager.h"
 #include "TextureManager.h"
-#include "InputManager.h"
-#include "Enums.h"
 
 #include <unordered_set>
+#include <vector>
 
 class MainMenu {
 
@@ -29,6 +32,7 @@ private:
     SDL_Texture* selectorTexture;
 
     TextManager* textManager;
+    vector<Button*> buttons;
 
 	int resolutionX;
 	int resolutionY;

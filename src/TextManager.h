@@ -7,6 +7,7 @@
 
 class TextManager {
 public:
+    static void LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, int y, int w, int h);
 	static void LoadFontAndPrint(const char* fontFile, int fontSize, const char* text, SDL_Color color, int x, int y, int w, int h, SDL_Renderer* rend);
 };
 

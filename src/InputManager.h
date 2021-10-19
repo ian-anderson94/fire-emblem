@@ -35,14 +35,20 @@ private:
 	std::unordered_set<SDL_Keycode> keysDown;
 	std::unordered_set<SDL_Keycode> keysUp;
 	std::unordered_map<SDL_Keycode, bool> keysPressed;
+    std::unordered_set<Uint8> buttonsDown;
+    std::unordered_set<Uint8> buttonsUp;
 
 	bool running;
 	bool locked;
 
 	void setKeyDown(SDL_Keycode key) { keysDown.insert(key); };
 	void setKeyUp(SDL_Keycode key) { keysUp.insert(key); };
+    void setMouseDown(Uint8 button) { buttonsDown.insert(button); };
+    void setMouseUp(Uint8 button) { buttonsUp.insert(button); };
 	std::unordered_set<SDL_Keycode> getDownKeys() { return keysDown; };
 	std::unordered_set<SDL_Keycode> getUpKeys() { return keysUp; };
+    std::unordered_set<Uint8> getDownButtons() { return buttonsDown; };
+    std::unordered_set<Uint8> getUpButtons() { return buttonsUp; };
 	std::unordered_set<SDL_Keycode> getPressedKeys();
 };
 

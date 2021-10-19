@@ -26,6 +26,32 @@ MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
 
     selectorTexture = TextureManager::loadTexture("./assets/selector_arrow.png");
 	selectionsTexture = nullptr;
+
+    const char* menuSelections[] = { "New Game", "Continue", "Options", "Exit" };
+    const Enums::Scene sceneVals[] { Enums::SCN_HubMenu, Enums::SCN_HubMenu, Enums::SCN_HubMenu, Enums::SCN_HubMenu };
+
+    int buttonWidth = resX / 2;
+    int buttonHeight = resY / 8;
+    int buttonX = (resX - buttonWidth) / 2;
+    int buttonY = resY / 4;
+    int yOffset = 0, yIncrement = (resY / 16) + buttonHeight;
+
+    for (int i = 0; i < sizeof(menuSelections) / sizeof(menuSelections[0]); i++) {
+        Enums::Scene (*pFunc)(Enums::Scene);
+        pFunc = &Button::GetSceneEnum;
+
+        buttons.push_back(new MainMenuButton(
+            menuSelections[i], 
+            buttonX, buttonY + yOffset, 
+            buttonWidth, 
+            buttonHeight,
+            Enums::SCENE_MainMenu,
+            sceneVals[i],
+            pFunc
+        ));
+
+        yOffset += yIncrement;
+    }
 }
 
 MainMenu::~MainMenu() {
@@ -33,8 +59,11 @@ MainMenu::~MainMenu() {
 }
 
 void MainMenu::render(SDL_Renderer* rend){
-	renderMenu(rend);
-    renderSelector(rend);
+	//renderMenu(rend);
+    //renderSelector(rend);
+    for (auto const& button : buttons) {
+        button->Render(rend);
+    }
 }
 
 void MainMenu::update(double dt) {
