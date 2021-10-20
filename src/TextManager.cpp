@@ -3,7 +3,7 @@
 
 void TextManager::LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, int y) {
     const char* fontFile = "./fonts/OpenSans-Regular.ttf";
-    int fontSize = 12;
+    int fontSize = 28;
 
     SDL_Color white = SDL_Color { 255, 255, 255 };
 
@@ -22,7 +22,7 @@ void TextManager::LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, 
 
 void TextManager::LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, int y, int w, int h) {
     const char* fontFile = "./fonts/OpenSans-Regular.ttf";
-    int fontSize = 14;
+    int fontSize = 28;
     SDL_Color white = SDL_Color { 255, 255, 255 };
 
     TTF_Font* font = TTF_OpenFont(fontFile, fontSize);

@@ -74,3 +74,14 @@ std::unordered_set<int> InputManager::getActionsPressed() {
 	return controls->getActionsFromInput(getPressedKeys(), buttonsDown);
 }
 
+std::unordered_map<int, bool> InputManager::GetActionMap() {
+    std::unordered_map<int, bool> actionMap;
+    std::unordered_set<int> actionsDown = getActionsDown();
+
+    for (auto const& action : actionsDown) {
+        actionMap.insert(std::pair<int, bool>(action, true));
+    }
+
+    return actionMap;
+}
+

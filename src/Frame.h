@@ -8,7 +8,7 @@
 class Frame {
     public:
         Frame(Position pos);
-        void Render(SDL_Renderer* rend);
+        void Render(SDL_Renderer* rend, float scale);
 
         Position GetPosition() { return pos; };
 

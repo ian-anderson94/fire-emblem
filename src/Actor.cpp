@@ -73,12 +73,12 @@ Actor::Actor(const char* image, const char* icon, int xPos, int yPos, int ts, St
     SDL_SetTextureAlphaMod(impassableTileTexture, 160);
 }
 
-void Actor::Render(SDL_Renderer* rend, int sizeFactor) {
+void Actor::Render(SDL_Renderer* rend, float scale) {
     SDL_Rect src = GetSrcRect();
 
-    SDL_Rect dst = (sizeFactor == 0) 
+    SDL_Rect dst = (scale == 0) 
         ? SDL_Rect { x, y, size, size}
-        : SDL_Rect { x, y, size * sizeFactor, size * sizeFactor};
+        : SDL_Rect { x, y, (int) (size * scale), (int) (size * scale)};
 
     SDL_RenderCopy(rend, actorTexture, &src, &dst);
 }

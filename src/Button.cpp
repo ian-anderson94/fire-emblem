@@ -15,7 +15,7 @@ void Button::Render(SDL_Renderer* rend) {
     SDL_RenderCopy(rend, backgroundTexture, NULL, &dst);
 
     SDL_Color black { 0, 0, 0 };
-    TextManager::LoadFontAndPrint(rend, text, x, y, w, h);
+    TextManager::LoadFontAndPrint(rend, text, x, y);
 }
 
 Enums::Scene Button::HandleEvents(SDL_Event event) {

@@ -27,7 +27,7 @@ class Actor {
         };
 
         Actor(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats, Enums::ClassType classType = Enums::CLS_Warrior);
-        void Render(SDL_Renderer* rend, int sizeFactor = 0);
+        void Render(SDL_Renderer* rend, float scale = 0);
         void RenderRelativeToViewport(SDL_Renderer* rend, int xOffset, int yOffset, int camX, int camY, int wTiles, int hTiles);
         virtual void Update(double dt, Map* map, vector<Actor*> actor);
 

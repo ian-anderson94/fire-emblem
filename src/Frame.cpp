@@ -5,7 +5,7 @@ Frame::Frame(Position pos) {
     frameTexture = TextureManager::loadTexture(frameImagePath);
 }
 
-void Frame::Render(SDL_Renderer* rend) {
-    SDL_Rect dst { pos.x, pos.y, pos.w, pos.h };
+void Frame::Render(SDL_Renderer* rend, float scale = 1) {
+    SDL_Rect dst { pos.x, pos.y, (int) (pos.w * scale), (int) (pos.h * scale) };
     SDL_RenderCopy(rend, frameTexture, NULL, &dst);
 }

@@ -8,6 +8,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <string>
 
 class InputManager {
@@ -21,6 +22,8 @@ public:
 	std::unordered_set<int> getActionsDown();
 	std::unordered_set<int> getActionsUp();
 	std::unordered_set<int> getActionsPressed();
+
+    std::unordered_map<int, bool> GetActionMap();
 
 	bool isLocked() { return locked; };
 	bool isRunning() { return running; };
