@@ -82,6 +82,9 @@ void Game::update(double dt) {
 			break;
 		case Enums::SCENE_PauseMenu:
 			break;
+        case Enums::SCN_HubRecruitment:
+            recruitmentScreen->Update();
+            break;
 		default:
 			break;
 	}

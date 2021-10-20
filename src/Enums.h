@@ -22,6 +22,11 @@ public:
         ACTM_End,
     };
 
+    enum ActionMenuRecruitment {
+        AMR_Recruit,
+        AMR_Cancel,
+    };
+
     enum ClassType {
         CLS_Warrior,
         CLS_Paladin,

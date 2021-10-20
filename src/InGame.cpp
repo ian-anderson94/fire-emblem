@@ -12,7 +12,7 @@ InGame::InGame(int resX, int resY, int ts) {
     selectedActor = nullptr;
     actorUnderCursor = nullptr;
 
-    actionMenu = new ActionMenu(ts);
+    actionMenu = new ActionMenu({ "Move", "Attack", "Inspect", "End" }, ts);
     actorManager = new ActorManager(resX, resY, ts);
     infoPanel = new InformationPanel(resX, resY, ts);
     pathingManager = new PathingManager(mapManager->GetMap(), ts);

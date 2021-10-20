@@ -7,12 +7,18 @@ RecruitmentScreen::RecruitmentScreen(int resX, int resY, int tileSize) {
     
     currSelection = 0;
 
+    actionMenu = new ActionMenu(menuOptions, tileSize);
+
     recruitGenerator = new RecruitGenerator(tileSize);
     recruitsAvailable = 4;
     maxRecruits = 4;
 
     RefreshRecruits(recruitsAvailable);
     CreateFrames();
+}
+
+void RecruitmentScreen::Update() {
+    actionMenu->Update(frames[currSelection]->GetPosition());
 }
 
 void RecruitmentScreen::Render(SDL_Renderer* rend) {
@@ -45,37 +51,66 @@ void RecruitmentScreen::Render(SDL_Renderer* rend) {
             // TODO: Render locked frame
         }
     }
+
+    actionMenu->Render(rend);
 }
 
 Enums::Scene RecruitmentScreen::HandleEvents(SDL_Event event) {
+    Enums::Scene currScene = Enums::SCN_HubRecruitment;
+
     InputManager* input = InputManager::getInstance();
 	unordered_map<int, bool> actions = input->GetActionMap();
 
     if (actions[Enums::ACTION_Left]) {
-        SetAndBoundCurrSelection(-1);
+        if (!actionMenu->IsActive()) {
+            SetAndBoundCurrSelection(-1);
+        }
     }
 
     if (actions[Enums::ACTION_Right]) {
-        SetAndBoundCurrSelection(1);
+        if (!actionMenu->IsActive()) {
+            SetAndBoundCurrSelection(1);
+        }
     }
 
     if (actions[Enums::ACTION_Up]) {
-        SetAndBoundCurrSelection(-2);
+        if (!actionMenu->IsActive()) {
+            SetAndBoundCurrSelection(-2);
+        } else {
+            actionMenu->DecrementSelection();
+        }
     }
 
     if (actions[Enums::ACTION_Down]) {
-        SetAndBoundCurrSelection(2);
+        if (!actionMenu->IsActive()) {
+            SetAndBoundCurrSelection(2);
+        } else {
+            actionMenu->IncrementSelection();
+        }
     }
 
     if (actions[Enums::ACTION_Select]) {
+        if (actionMenu->IsActive()) {
+            int selection = actionMenu->GetSelection();
 
+            switch (selection) {
+                case Enums::AMR_Recruit: /* Add selection to roster */ break;
+                case Enums::AMR_Cancel: actionMenu->SetActive(false); break;
+            }
+        } else {
+            actionMenu->SetActive(true);
+        }
     }
 
     if (actions[Enums::ACTION_Cancel]) {
-
+        if (actionMenu->IsActive()) {
+            actionMenu->SetActive(false);
+        } else {
+            currScene = Enums::SCN_HubMenu;
+        }
     }
 
-    return Enums::SCN_HubRecruitment;
+    return currScene;
 }
 
 void RecruitmentScreen::RefreshRecruits(int count) {

@@ -2,11 +2,12 @@
 
 #include <iostream>
 
-ActionMenu::ActionMenu(int ts) {
-    currSelection = Enums::ACTM_Move;
-    active = false;
+ActionMenu::ActionMenu(vector<string> menuOptions, int tileSize) {
+    this->menuOptions = menuOptions;
+    this->tileSize = tileSize;
 
-    tileSize = ts;
+    currSelection = 0;
+    active = false;
 
     w = tileSize * 2;
     h = tileSize * 3;
@@ -36,16 +37,11 @@ void ActionMenu::Render(SDL_Renderer* rend) {
 }
 
 void ActionMenu::RenderMenuOptions(SDL_Renderer* rend) {
-    SDL_Color white = { 255, 255, 255 };
-    const char* fontFile = "fonts/OpenSans-Regular.ttf";
-
     int yOffset = 0;
-    std::vector<std::string> options = { "Move", "Attack", "Inspect", "End" };
 
     int mx = x + (tileSize / 2);
-    int mw = w - (tileSize / 2);
 
-    for (auto const& option : options) {
+    for (auto const& option : menuOptions) {
         TextManager::LoadFontAndPrint(rend, option.c_str(), mx, y + yOffset);
         yOffset += tileSize / 2;
     }
@@ -70,6 +66,11 @@ void ActionMenu::Update(int cursorX, int cursorY) {
     y = cursorY * tileSize;
 }
 
+void ActionMenu::Update(Position pos) {
+    x = pos.x;
+    y = pos.y;
+}
+
 void ActionMenu::IncrementSelection() {
     currSelection++;
     BoundSelection();
@@ -81,9 +82,9 @@ void ActionMenu::DecrementSelection() {
 }
 
 void ActionMenu::BoundSelection() {
-    if (currSelection > Enums::ACTM_End) {
-        currSelection = Enums::ACTM_Move;
-    } else if (currSelection < Enums::ACTM_Move) {
-        currSelection = Enums::ACTM_End;
+    if (currSelection >=  (int) menuOptions.size()) {
+        currSelection = 0;
+    } else if (currSelection < 0) {
+        currSelection = menuOptions.size() - 1;
     }
 }
