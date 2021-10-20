@@ -1,11 +1,15 @@
 #ifndef SRC_RECRUITMENTSCREEN_H_
 #define SRC_RECRUITMENTSCREEN_H_
 
+#include "Frame.h"
+#include "Position.h"
 #include "RecruitGenerator.h"
 #include "TextManager.h"
 
 #include <string>
 #include <vector>
+
+using namespace std;
 
 class RecruitmentScreen {
     public:
@@ -16,9 +20,11 @@ class RecruitmentScreen {
     private:
         int resX, resY, tileSize, recruitsAvailable, maxRecruits;
         vector<Actor*> recruits;
+        vector<Frame*> frames;
         RecruitGenerator* recruitGenerator;
 
         void RefreshRecruits(int count);
+        void CreateFrames();
         void CreateAndRenderRecruitFrame(SDL_Renderer* rend, Actor* recruit, int frameX, int frameY);
 };
 

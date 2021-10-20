@@ -77,7 +77,8 @@ public:
 		SCENE_Options,
 		SCENE_PauseMenu,
         SCN_HubMenu,
-        SCN_HubRecruitment
+        SCN_HubRecruitment,
+        SCN_NULL
 	};
 
     enum SpriteSheetFrames {

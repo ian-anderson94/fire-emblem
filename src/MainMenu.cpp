@@ -74,6 +74,7 @@ Enums::Scene MainMenu::handleEvents(SDL_Event event) {
 	InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
 
+    /*
 	Enums::Scene menuSelectionValue = Enums::SCENE_MainMenu;
 
 	if (Globals::Contains(actions, Enums::ACTION_Up)) {
@@ -89,8 +90,16 @@ Enums::Scene MainMenu::handleEvents(SDL_Event event) {
 	else if (Globals::Contains(actions, Enums::ACTION_Select)) {
 		menuSelectionValue = MapMainMenuSelectionToScene();
 	}
+    */
 
-	return menuSelectionValue;
+    for (auto const& button : buttons) {
+        Enums::Scene menuSelection = button->HandleEvents(event);
+        if (menuSelection != Enums::SCN_NULL) {
+            return menuSelection;
+        }
+    }
+
+	return Enums::SCENE_MainMenu;
 }
 
 Enums::Scene MainMenu::MapMainMenuSelectionToScene() {

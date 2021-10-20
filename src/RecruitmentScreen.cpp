@@ -6,20 +6,32 @@ RecruitmentScreen::RecruitmentScreen(int resX, int resY, int tileSize) {
     this->tileSize = tileSize;
 
     recruitGenerator = new RecruitGenerator(tileSize);
-    recruitsAvailable = 2;
+    recruitsAvailable = 4;
     maxRecruits = 4;
 
     RefreshRecruits(recruitsAvailable);
+    CreateFrames();
 }
 
 void RecruitmentScreen::Render(SDL_Renderer* rend) {
-    int xOffset = resX / 4;
-    int yOffset = resY / 4;
+    for (int i = 0; i < maxRecruits; i++) {
+        frames[i]->Render(rend);
 
-    CreateAndRenderRecruitFrame(rend, recruits[0], xOffset, yOffset);
-    CreateAndRenderRecruitFrame(rend, recruits[1], xOffset * 3, yOffset);
-    CreateAndRenderRecruitFrame(rend, recruits[2], xOffset, yOffset * 3);
-    CreateAndRenderRecruitFrame(rend, recruits[3], xOffset * 3, yOffset * 3);
+        // If not nullptr, render recruit in frame. Otherwise render locked frame
+        if (recruits[i]) {
+            Position fPos = frames[i]->GetPosition();
+            string recruitName = recruits[i]->GetName();
+            string recruitLevel = "Lvl " + to_string(recruits[i]->GetLevel());
+
+            recruits[i]->SetPosition(fPos.x, fPos.y);
+            recruits[i]->Render(rend, 1);
+
+            TextManager::LoadFontAndPrint(rend, recruitName.c_str(), fPos.x + tileSize, fPos.y);
+            TextManager::LoadFontAndPrint(rend, recruitLevel.c_str(), fPos.x + tileSize, fPos.y + (tileSize / 2));
+        } else {
+            // TODO: Render locked frame
+        }
+    }
 }
 
 Enums::Scene RecruitmentScreen::HandleEvents(SDL_Event event) {
@@ -35,17 +47,21 @@ void RecruitmentScreen::RefreshRecruits(int count) {
     }
 }
 
-void RecruitmentScreen::CreateAndRenderRecruitFrame(SDL_Renderer* rend, Actor* recruit, int frameX, int frameY) {
-    // Render recruit if not nullptr, locked slot otherwise
-    if (recruit) {
-        int sizeFactor = 4;
-        std::string recruitName = recruit->GetName();
-        std::string recruitLevel = std::to_string(recruit->GetLevel());
+void RecruitmentScreen::CreateFrames() {
+    int halfTs = tileSize;
+    int halfResX = resX / 2;
+    int halfResY = resY / 2;
 
-        recruit->SetPosition(frameX, frameY);
-        recruit->Render(rend, sizeFactor);
+    int frameWidth = halfResX - tileSize;
+    int frameHeight = halfResY - tileSize;
 
-        TextManager::LoadFontAndPrint(rend, recruitName.c_str(), frameX, frameY + (tileSize * sizeFactor), tileSize * sizeFactor, tileSize);
-        TextManager::LoadFontAndPrint(rend, recruitLevel.c_str(), frameX, frameY + (tileSize * sizeFactor) + tileSize, tileSize * sizeFactor, tileSize);
-    }
+    Position pos1 { halfTs , halfTs, frameWidth, frameHeight };
+    Position pos2 { halfTs + halfResX , halfTs, frameWidth, frameHeight };
+    Position pos3 { halfTs , halfTs + halfResY, frameWidth, frameHeight };
+    Position pos4 { halfTs + halfResX , halfTs + halfResY, frameWidth, frameHeight };
+
+    frames.push_back(new Frame(pos1));
+    frames.push_back(new Frame(pos2));
+    frames.push_back(new Frame(pos3));
+    frames.push_back(new Frame(pos4));
 }

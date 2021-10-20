@@ -26,11 +26,11 @@ Enums::Scene Button::HandleEvents(SDL_Event event) {
 
     if (Utils::Contains(actions, Enums::ACTION_Select)) {
         if (IsClicked()) {
-            newScene = Execute();
+            return Execute();
         }
     }
 
-    return newScene;
+    return Enums::SCN_NULL;
 }
 
 bool Button::IsClicked() {

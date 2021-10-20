@@ -46,7 +46,8 @@ void ActionMenu::RenderMenuOptions(SDL_Renderer* rend) {
     int mw = w - (tileSize / 2);
 
     for (auto const& option : options) {
-        TextManager::LoadFontAndPrint(fontFile, 12, option.c_str(), white, mx, y + yOffset, mw, h / 4, rend);
+        TextManager::LoadFontAndPrint(rend, option.c_str(), mx, y + yOffset);
+        //TextManager::LoadFontAndPrint(fontFile, 12, option.c_str(), white, mx, y + yOffset, mw, h / 4, rend);
         yOffset += tileSize / 2;
     }
 }
