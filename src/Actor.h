@@ -48,7 +48,7 @@ class Actor {
         void SetSelected(bool val) { selected = val; };
         void SetPlanningMove(bool val) { planningMove = val; };
         void SetPlanningAttack(bool val) { planningAttack = val; };
-        void SetPosition(int x, int y) { this->x = x; this->y = y; };
+        void SetPosition(int x, int y) { this->x = this->xDouble = x; this->y = this->yDouble = y; };
         void Move(vector<GridLocation> path);
         void Attack(Actor* target);
         void ChangeHealth(int delta) { stats.health += delta; };

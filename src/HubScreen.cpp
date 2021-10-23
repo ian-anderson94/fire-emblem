@@ -46,7 +46,23 @@ Enums::Scene HubScreen::HandleEvents(SDL_Event event) {
     }
 
     if (Utils::Contains(actions, Enums::ACTION_Select)) {
-        sceneSelection = MapHubSelectionToScene();
+        PlayerAccount* account = PlayerAccount::GetInstance();
+
+        switch (currSelection) {
+            case Enums::HUB_Embark:
+                if ((int) account->GetParty().size() == 0) {
+                    /* Error message about party with 0 size */
+                } else {
+                    sceneSelection = Enums::SCENE_InGame;
+                }
+
+                break;
+            case Enums::HUB_Recruitment:
+                sceneSelection = Enums::SCN_HubRecruitment;
+                break;
+        }
+
+        //sceneSelection = MapHubSelectionToScene();
     }
 
     return sceneSelection;

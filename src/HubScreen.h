@@ -3,6 +3,7 @@
 
 #include "Enums.h"
 #include "InputManager.h"
+#include "PlayerAccount.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
 #include "Utils.h"

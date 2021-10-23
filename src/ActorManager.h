@@ -3,6 +3,7 @@
 
 #include "Actor.h"
 #include "Map.h"
+#include "PlayerAccount.h"
 #include "SDL2/SDL.h"
 
 #include <unordered_set>
@@ -18,6 +19,7 @@ class ActorManager {
 
         bool AnyActorsMoving();
 
+        void PopulateFromParty();
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);
         unordered_set<Actor*> GetAllActors() { return actors; };

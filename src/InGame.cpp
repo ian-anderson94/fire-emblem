@@ -5,6 +5,8 @@ InGame::InGame(int resX, int resY, int ts) {
     resolutionY = resY;
     tileSize = ts;
 
+    matchStarted = false;
+
     mapManager = new MapManager(tileSize);
     mapManager->LoadMapFromFile("./maps/test.txt");
 
@@ -20,6 +22,7 @@ InGame::InGame(int resX, int resY, int ts) {
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
     turnManager = new TurnManager(resX, resY, ts);
 
+    /*
     Actor* testActor1 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
     Actor* testActor2 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 6, 6, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
     Actor* testActor3 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 9, 9, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
@@ -30,6 +33,18 @@ InGame::InGame(int resX, int resY, int ts) {
     actorManager->Add(testEnemy1);
 
     mapManager->SetTilesOccupied(actorManager->GetAllActors());
+    */
+}
+
+void InGame::StartMatch() {
+    if (!matchStarted) {
+        PlayerAccount* account = PlayerAccount::GetInstance();
+        
+        actorManager->PopulateFromParty();
+        mapManager->SetTilesOccupied(actorManager->GetAllActors());
+    }
+
+    matchStarted = true;
 }
 
 void InGame::Update(double dt) {

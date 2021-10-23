@@ -33,9 +33,10 @@ void RecruitmentScreen::Render(SDL_Renderer* rend) {
 
         frames[i]->Render(rend, scale);
 
+        Position fPos = frames[i]->GetPosition();
+
         // If not nullptr, render recruit in frame. Otherwise render locked frame
         if (recruits[i]) {
-            Position fPos = frames[i]->GetPosition();
             string recruitName = recruits[i]->GetName();
             string recruitLevel = "Lvl " + to_string(recruits[i]->GetLevel());
 
@@ -48,7 +49,8 @@ void RecruitmentScreen::Render(SDL_Renderer* rend) {
             TextManager::LoadFontAndPrint(rend, recruitName.c_str(), rPos.x + (tileSize * renderScale), rPos.y);
             TextManager::LoadFontAndPrint(rend, recruitLevel.c_str(), rPos.x + (tileSize * renderScale), rPos.y + (tileSize / 2));
         } else {
-            // TODO: Render locked frame
+            string unavailableString = "Unavailable";
+            TextManager::LoadFontAndPrint(rend, unavailableString.c_str(), fPos.x, fPos.y);
         }
     }
 
@@ -94,11 +96,13 @@ Enums::Scene RecruitmentScreen::HandleEvents(SDL_Event event) {
             int selection = actionMenu->GetSelection();
 
             switch (selection) {
-                case Enums::AMR_Recruit: /* Add selection to roster */ break;
+                case Enums::AMR_Recruit: Recruit(); break;
                 case Enums::AMR_Cancel: actionMenu->SetActive(false); break;
             }
         } else {
-            actionMenu->SetActive(true);
+            if (recruits[currSelection]) {
+                actionMenu->SetActive(true);
+            }
         }
     }
 
@@ -149,4 +153,16 @@ void RecruitmentScreen::SetAndBoundCurrSelection(int delta) {
     } else if (currSelection >= maxRecruits) {
         currSelection = 0 + (currSelection - maxRecruits);
     }
+}
+
+void RecruitmentScreen::Recruit() {
+    PlayerAccount* account = PlayerAccount::GetInstance();
+    account->AddToRoster(recruits[currSelection]);
+
+    if ((int) account->GetParty().size() < account->GetMaxPartySize()) {
+        account->AddToParty(recruits[currSelection]);
+    }
+
+    actionMenu->SetActive(false);
+    recruits[currSelection] = nullptr;
 }

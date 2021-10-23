@@ -4,6 +4,7 @@
 #include "ActionMenu.h"
 #include "Frame.h"
 #include "InputManager.h"
+#include "PlayerAccount.h"
 #include "Position.h"
 #include "RecruitGenerator.h"
 #include "TextManager.h"
@@ -38,6 +39,7 @@ class RecruitmentScreen {
         void RefreshRecruits(int count);
         void CreateFrames();
         void CreateAndRenderRecruitFrame(SDL_Renderer* rend, Actor* recruit, int frameX, int frameY);
+        void Recruit();
 };
 
 #endif /* SRC_RECRUITMENTSCREEN_H_ */

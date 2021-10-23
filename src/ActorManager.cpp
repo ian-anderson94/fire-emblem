@@ -83,3 +83,15 @@ bool ActorManager::AnyActorsMoving() {
 
     return anyMoving;
 }
+
+void ActorManager::PopulateFromParty() {
+    PlayerAccount* account = PlayerAccount::GetInstance();
+
+    int startX = 0, startY = 0;
+
+    for (auto& actor : account->GetParty()) {
+        actor->SetPosition(startX, startY);
+        actors.insert(actor);
+        startX++;
+    }
+}

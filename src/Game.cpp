@@ -78,6 +78,7 @@ void Game::update(double dt) {
             mainMenu->update(dt);
 			break;
 		case Enums::SCENE_InGame:
+            inGame->StartMatch();
             inGame->Update(dt);
 			break;
 		case Enums::SCENE_PauseMenu:

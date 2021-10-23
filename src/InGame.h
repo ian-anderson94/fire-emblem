@@ -12,6 +12,7 @@
 #include "InputManager.h"
 #include "MapManager.h"
 #include "PathingManager.h"
+#include "PlayerAccount.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
 #include "TurnManager.h"
@@ -24,12 +25,15 @@ class InGame {
         void Render(SDL_Renderer* rend);
         Enums::Scene HandleEvents(SDL_Event event);
 
+        void StartMatch();
+        void EndMatch() { matchStarted = false; };
         void PrintPositions();
 
     private:
         int resolutionX;
         int resolutionY;
         int tileSize;
+        bool matchStarted;
 
         Actor* activeActor;
         Actor* selectedActor;
