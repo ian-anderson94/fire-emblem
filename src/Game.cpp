@@ -1,24 +1,15 @@
 #include "Game.h"
 
 SDL_Renderer* Game::renderer = nullptr;
+Background* Game::background = nullptr;
+TextManager* Game::textManager = nullptr;
 SDL_Event Game::event;
-
-Background* Game::background;
-HubScreen* Game::hubScreen;
-InGame* Game::inGame;
-MainMenu* Game::mainMenu;
-RecruitmentScreen* Game::recruitmentScreen;
-TextManager* Game::textManager;
 
 Game::Game() {
 	isRunning = true;
 	window = NULL;
 
-    currScene = Enums::SCENE_MainMenu;
-}
-
-Game::~Game() {
-
+    currScene = Enums::SCN_MainMenu;
 }
 
 void Game::init(const char* title, ResolutionManager* resolutionManager) {
@@ -59,11 +50,12 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
     int xResolution = resolutionManager->GetFlag(Enums::CLF_xResolution);
     int yResolution = resolutionManager->GetFlag(Enums::CLF_yResolution);
 
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_MainMenu, new MainMenu(xResolution, yResolution, tileSize, textManager)));
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubMenu, new HubScreen(xResolution, yResolution, tileSize)));
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubRecruitment, new RecruitmentScreen(xResolution, yResolution, tileSize)));
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_InGame, new InGame(xResolution, yResolution, tileSize)));
+
     Game::background = new Background(xResolution, yResolution);
-    Game::hubScreen = new HubScreen(xResolution, yResolution, tileSize);
-    Game::inGame = new InGame(xResolution, yResolution, tileSize);
-    Game::mainMenu = new MainMenu(xResolution, yResolution, textManager);
-    Game::recruitmentScreen = new RecruitmentScreen(xResolution, yResolution, tileSize);
     Game::textManager = new TextManager();
 }
 
@@ -73,90 +65,22 @@ void Game::update(double dt) {
 
     AnimationManager::GetInstance()->TickAnimationTimer(dt);
 
-	switch(currScene) {
-		case Enums::SCENE_MainMenu:
-            mainMenu->update(dt);
-			break;
-		case Enums::SCENE_InGame:
-            inGame->StartMatch();
-            inGame->Update(dt);
-			break;
-		case Enums::SCENE_PauseMenu:
-			break;
-        case Enums::SCN_HubRecruitment:
-            recruitmentScreen->Update();
-            break;
-		default:
-			break;
-	}
+    scenes[currScene]->Update(dt);
 }
 
 void Game::render(SDL_Renderer* rend) {
 	SDL_RenderClear(rend);
-
     background->Render(rend);
-
-	switch(currScene) {
-		case Enums::SCENE_MainMenu:
-			Game::mainMenu->render(rend);
-			break;
-		case Enums::SCENE_InGame:
-            Game::inGame->Render(rend);
-			break;
-		case Enums::SCENE_PauseMenu:
-			break;
-        case Enums::SCN_HubMenu:
-            Game::hubScreen->Render(rend);
-            break;
-        case Enums::SCN_HubRecruitment:
-            Game::recruitmentScreen->Render(rend);
-		default:
-			break;
-	}
-
+    scenes[currScene]->Render(rend);
 	SDL_RenderPresent(rend);
 }
 
 void Game::handleEvents() {
-    switch (currScene) {
-        case Enums::SCENE_MainMenu:
-            currScene = mainMenu->handleEvents(Game::event);
-            break;
-        case Enums::SCENE_InGame:
-            currScene = inGame->HandleEvents(Game::event);
-            break;
-        case Enums::SCN_HubMenu:
-            currScene = hubScreen->HandleEvents(Game::event);
-            break;
-        case Enums::SCN_HubRecruitment:
-            currScene = recruitmentScreen->HandleEvents(Game::event);
-            break;
-        default:
-            throw invalid_argument("Error in Game::HandleEvents\n");
-    }
+    currScene = scenes[currScene]->HandleEvents(Game::event);
 }
 
 void Game::clean() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
-}
-
-void Game::updateScene(int menuSelection) {
-	switch (menuSelection) {
-	case Enums::MMS_MainMenu:
-		currScene = Enums::SCENE_MainMenu;
-		break;
-	case Enums::MMS_GameStart:
-		currScene = Enums::SCENE_InGame;
-		break;
-	case Enums::MMS_Options:
-		currScene = Enums::SCENE_Options;
-		break;
-	case Enums::MMS_Exit:
-		isRunning = false;
-		break;
-	default:
-		break;
-	}
 }

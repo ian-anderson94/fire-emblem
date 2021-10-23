@@ -7,6 +7,7 @@
 #include "PlayerAccount.h"
 #include "Position.h"
 #include "RecruitGenerator.h"
+#include "Scene.h"
 #include "TextManager.h"
 #include "Utils.h"
 
@@ -18,15 +19,15 @@
 
 using namespace std;
 
-class RecruitmentScreen {
+class RecruitmentScreen : public Scene {
     public:
         RecruitmentScreen(int resX, int resY, int tileSize);
         void Render(SDL_Renderer* rend);
-        void Update();
+        void Update(double dt);
         Enums::Scene HandleEvents(SDL_Event event);
 
     private:
-        int resX, resY, tileSize, recruitsAvailable, maxRecruits, currSelection;
+        int recruitsAvailable, maxRecruits, currSelection;
 
         const vector<string> menuOptions = { "Recruit", "Cancel" };
         vector<Actor*> recruits;

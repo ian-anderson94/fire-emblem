@@ -1,10 +1,6 @@
 #include "HubScreen.h"
 
-HubScreen::HubScreen(int resX, int resY, int tileSize) {
-    this->resX = resX;
-    this->resY = resY,
-    this->tileSize = tileSize;
-
+HubScreen::HubScreen(int resX, int resY, int tileSize) : Scene(resX, resY, tileSize) {
     currSelection = Enums::HUB_Embark;
     recruitmentImagePath = "./assets/PH_house.png";
     embarkImagePath = "./assets/embark.png";
@@ -53,7 +49,7 @@ Enums::Scene HubScreen::HandleEvents(SDL_Event event) {
                 if ((int) account->GetParty().size() == 0) {
                     /* Error message about party with 0 size */
                 } else {
-                    sceneSelection = Enums::SCENE_InGame;
+                    sceneSelection = Enums::SCN_InGame;
                 }
 
                 break;
@@ -73,7 +69,7 @@ Enums::Scene HubScreen::MapHubSelectionToScene() {
 
     switch (currSelection) {
         case Enums::HUB_Recruitment: scene = Enums::SCN_HubRecruitment; break;
-        case Enums::HUB_Embark: scene = Enums::SCENE_InGame; break;
+        case Enums::HUB_Embark: scene = Enums::SCN_InGame; break;
     }
 
     return scene;
@@ -93,4 +89,8 @@ void HubScreen::DecrementSelection() {
     if (currSelection < Enums::HUB_Recruitment) {
         currSelection = Enums::HUB_Embark;
     }
+}
+
+void HubScreen::Update(double dt) {
+    // Nothing atm
 }

@@ -77,10 +77,10 @@ public:
 	};
 
 	enum Scene {
-		SCENE_MainMenu,
-		SCENE_InGame,
-		SCENE_Options,
-		SCENE_PauseMenu,
+		SCN_MainMenu,
+		SCN_InGame,
+		SCN_Options,
+		SCN_PauseMenu,
         SCN_HubMenu,
         SCN_HubRecruitment,
         SCN_NULL

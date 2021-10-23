@@ -14,15 +14,12 @@ void Button::Render(SDL_Renderer* rend) {
     SDL_Rect dst { x, y, w, h };
     SDL_RenderCopy(rend, backgroundTexture, NULL, &dst);
 
-    SDL_Color black { 0, 0, 0 };
     TextManager::LoadFontAndPrint(rend, text, x, y);
 }
 
 Enums::Scene Button::HandleEvents(SDL_Event event) {
     InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
-
-    Enums::Scene newScene = currScene;
 
     if (Utils::Contains(actions, Enums::ACTION_Select)) {
         if (IsClicked()) {
@@ -46,5 +43,5 @@ bool Button::IsClicked() {
 }
 
 Enums::Scene Button::Execute() {
-    return Enums::SCENE_MainMenu;
+    return Enums::SCN_MainMenu;
 }

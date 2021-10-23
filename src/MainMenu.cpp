@@ -1,22 +1,10 @@
 #include "MainMenu.h"
 #include <iostream>
 
-MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
-	resolutionX = resX;
-	resolutionY = resY;
+MainMenu::MainMenu(int resX, int resY, int tileSize, TextManager* textManager) : Scene(resX, resY, tileSize) {
 	screenCenterX = resX / 2;
 	screenCenterY = resY / 2;
 	currSelection = Enums::MMS_GameStart;
-
-	srcRect.x = 0;
-	srcRect.y = 0;
-	srcRect.w = 0;
-	srcRect.h = 0;
-
-	destRect.x = 0;
-	destRect.y = 0;
-	destRect.w = 0;
-	destRect.h = 0;
 
     mainMenuTextSize = 60;
 
@@ -45,7 +33,7 @@ MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
             buttonX, buttonY + yOffset, 
             buttonWidth, 
             buttonHeight,
-            Enums::SCENE_MainMenu,
+            Enums::SCN_MainMenu,
             sceneVals[i],
             pFunc
         ));
@@ -54,11 +42,7 @@ MainMenu::MainMenu(int resX, int resY, TextManager* textManager) {
     }
 }
 
-MainMenu::~MainMenu() {
-
-}
-
-void MainMenu::render(SDL_Renderer* rend){
+void MainMenu::Render(SDL_Renderer* rend){
 	//renderMenu(rend);
     //renderSelector(rend);
     for (auto const& button : buttons) {
@@ -66,16 +50,16 @@ void MainMenu::render(SDL_Renderer* rend){
     }
 }
 
-void MainMenu::update(double dt) {
+void MainMenu::Update(double dt) {
     // Nothing atm
 }
 
-Enums::Scene MainMenu::handleEvents(SDL_Event event) {
+Enums::Scene MainMenu::HandleEvents(SDL_Event event) {
 	InputManager* input = InputManager::getInstance();
 	std::unordered_set<int> actions = input->getActionsDown();
 
     /*
-	Enums::Scene menuSelectionValue = Enums::SCENE_MainMenu;
+	Enums::Scene menuSelectionValue = Enums::SCN_MainMenu;
 
 	if (Globals::Contains(actions, Enums::ACTION_Up)) {
 		currSelection--;
@@ -99,7 +83,7 @@ Enums::Scene MainMenu::handleEvents(SDL_Event event) {
         }
     }
 
-	return Enums::SCENE_MainMenu;
+	return Enums::SCN_MainMenu;
 }
 
 Enums::Scene MainMenu::MapMainMenuSelectionToScene() {
@@ -121,8 +105,8 @@ void MainMenu::renderMenu(SDL_Renderer* rend) {
     int verticalOffset = 0, x = 0, y = 0, w = 0, h = 0;
 
     for (int index = 0; index < (sizeof(menuOptions) / sizeof(menuOptions[0])); index++) {
-        w = resolutionX / 4;
-        h = resolutionY / 8;
+        w = resX / 4;
+        h = resY / 8;
         x = screenCenterX - (w / 2);
         y = screenCenterY - (h / 2) + verticalOffset;
 
@@ -134,7 +118,7 @@ void MainMenu::renderMenu(SDL_Renderer* rend) {
 
 void MainMenu::renderSelector(SDL_Renderer* rend) {
     int frame = AnimationManager::GetInstance()->GetFrameIndex(6);
-    int selectorSize = resolutionY / 8;
+    int selectorSize = resY / 8;
     SDL_Rect src {0, 0, 0, 0};
     SDL_Rect dest {0, 0, 0, 0};
 
@@ -144,8 +128,8 @@ void MainMenu::renderSelector(SDL_Renderer* rend) {
     src.h = 64;
 
     dest.w = dest.h = selectorSize;
-    dest.x = screenCenterX - (resolutionX / 8) - (selectorSize * 2);
-    dest.y = screenCenterY - (resolutionY / 16) + selectorVerticalOffset;
+    dest.x = screenCenterX - (resX / 8) - (selectorSize * 2);
+    dest.y = screenCenterY - (resY / 16) + selectorVerticalOffset;
 
     SDL_RenderCopy(rend, selectorTexture, &src, &dest);
 }

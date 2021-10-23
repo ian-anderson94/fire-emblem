@@ -1,10 +1,6 @@
 #include "RecruitmentScreen.h"
 
-RecruitmentScreen::RecruitmentScreen(int resX, int resY, int tileSize) {
-    this->resX = resX;
-    this->resY = resY;
-    this->tileSize = tileSize;
-    
+RecruitmentScreen::RecruitmentScreen(int resX, int resY, int tileSize) : Scene(resX, resY, tileSize) {    
     currSelection = 0;
 
     actionMenu = new ActionMenu(menuOptions, tileSize);
@@ -17,7 +13,7 @@ RecruitmentScreen::RecruitmentScreen(int resX, int resY, int tileSize) {
     CreateFrames();
 }
 
-void RecruitmentScreen::Update() {
+void RecruitmentScreen::Update(double dt) {
     actionMenu->Update(frames[currSelection]->GetPosition());
 }
 

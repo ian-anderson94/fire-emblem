@@ -6,6 +6,7 @@
 #include "Enums.h"
 #include "InputManager.h"
 #include "Mouse.h"
+#include "Scene.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
@@ -15,38 +16,32 @@
 #include <unordered_set>
 #include <vector>
 
-class MainMenu {
+class MainMenu : public Scene {
+    public:
+        MainMenu(int resX, int resY, int tileSize, TextManager* textManager);
 
-public:
-	MainMenu(int resX, int resY, TextManager* textManager);
-	virtual ~MainMenu();
+        void Update(double dt);
+        void Render(SDL_Renderer* rend);
+        Enums::Scene HandleEvents(SDL_Event event);
 
-	void update(double dt);
-	void render(SDL_Renderer* rend);
-	Enums::Scene handleEvents(SDL_Event event);
+    private:
+        SDL_Texture* selectionsTexture;
+        SDL_Texture* selectorTexture;
 
-private:
-	SDL_Rect srcRect;
-	SDL_Rect destRect;
-	SDL_Texture* selectionsTexture;
-    SDL_Texture* selectorTexture;
+        TextManager* textManager;
+        vector<Button*> buttons;
 
-    TextManager* textManager;
-    vector<Button*> buttons;
+        int screenCenterX;
+        int screenCenterY;
+        int currSelection;
+        int selectorVerticalOffset;
+        int mainMenuTextSize;
 
-	int resolutionX;
-	int resolutionY;
-	int screenCenterX;
-	int screenCenterY;
-	int currSelection;
-    int selectorVerticalOffset;
-    int mainMenuTextSize;
+        void renderMenu(SDL_Renderer* rend);
+        void renderSelector(SDL_Renderer* rend);
+        Enums::Scene MapMainMenuSelectionToScene();
 
-	void renderMenu(SDL_Renderer* rend);
-    void renderSelector(SDL_Renderer* rend);
-    Enums::Scene MapMainMenuSelectionToScene();
-
-	int boundCurrSelection();
+        int boundCurrSelection();
 };
 
 #endif /* SRC_MAINMENU_H_ */

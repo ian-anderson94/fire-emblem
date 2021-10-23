@@ -32,11 +32,7 @@ void InformationPanel::Render(SDL_Renderer* rend) {
 }
 
 void InformationPanel::RenderMessage(SDL_Renderer* rend) {
-    SDL_Color white = { 255, 255, 255 };
-    const char* fontFile = "fonts/OpenSans-Regular.ttf";
-
     TextManager::LoadFontAndPrint(rend, message.c_str(), messageX, messageY);
-    //TextManager::LoadFontAndPrint(fontFile, 20, message.c_str(), white, messageX, messageY, messageW, messageH, rend);
 }
 
 void InformationPanel::Update(int cursorX, int cursorY, Tile* tileUnderCursor) {

@@ -4,6 +4,7 @@
 #include "Enums.h"
 #include "InputManager.h"
 #include "PlayerAccount.h"
+#include "Scene.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
 #include "Utils.h"
@@ -12,15 +13,15 @@
 
 using namespace std;
 
-class HubScreen {
+class HubScreen : public Scene {
     public:
         HubScreen(int resX, int resY, int tileSize);
         Enums::Scene HandleEvents(SDL_Event event);
         void Render(SDL_Renderer* rend);
-        void Update();
+        void Update(double dt);
 
     private:
-        int resX, resY, tileSize, currSelection;
+        int currSelection;
 
         const char* recruitmentImagePath;
         const char* embarkImagePath;

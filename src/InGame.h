@@ -13,26 +13,22 @@
 #include "MapManager.h"
 #include "PathingManager.h"
 #include "PlayerAccount.h"
+#include "Scene.h"
 #include "SDL2/SDL.h"
 #include "TextureManager.h"
 #include "TurnManager.h"
 #include "ViewPort.h"
 
-class InGame {
+class InGame : public Scene {
     public:
-        InGame(int resX, int resY, int ts);
+        InGame(int resX, int resY, int tileSize);
         void Update(double dt);
         void Render(SDL_Renderer* rend);
         Enums::Scene HandleEvents(SDL_Event event);
 
-        void StartMatch();
-        void EndMatch() { matchStarted = false; };
         void PrintPositions();
 
     private:
-        int resolutionX;
-        int resolutionY;
-        int tileSize;
         bool matchStarted;
 
         Actor* activeActor;
@@ -51,6 +47,8 @@ class InGame {
         void HandlePlayerTurn(SDL_Event event);
         void HandleEnemyTurn(SDL_Event event);
 
+        void EndMatch() { matchStarted = false; };
+        void StartMatch();
         void EndTurn();
         void MoveCursorUp();
         void MoveCursorDown();

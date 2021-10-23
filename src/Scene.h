@@ -6,13 +6,14 @@
 
 class Scene {
     public:
-        Scene();
-        virtual void Update();
-        virtual void Render(SDL_Renderer* rend);
-        virtual Enums::Scene HandleEvents(SDL_Event event);
+        Scene(int resX, int resY, int tileSize);
+        virtual void Update(double dt) = 0;
+        virtual void Render(SDL_Renderer* rend) = 0;
+        virtual Enums::Scene HandleEvents(SDL_Event event) = 0;
 
-    private:
+    protected:
         Enums::Scene sceneType;
+        int resX, resY, tileSize;
 };
 
 #endif /* SRC_SCENE_H_ */

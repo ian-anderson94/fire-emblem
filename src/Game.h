@@ -13,14 +13,17 @@
 #include "MainMenu.h"
 #include "RecruitmentScreen.h"
 #include "ResolutionManager.h"
+#include "Scene.h"
 #include "TextManager.h"
 
 #include <iostream>
+#include <unordered_map>
+
+using namespace std;
 
 class Game {
 public:
 	Game();
-	virtual ~Game();
 
 	void init(const char* title, ResolutionManager* resolutionManager);
 	void update(double dt);
@@ -31,26 +34,17 @@ public:
 	bool getIsRunning() { return isRunning; };
 
     static Background* background;
-    static HubScreen* hubScreen;
-    static InGame* inGame;
-	static MainMenu* mainMenu;
-    static RecruitmentScreen* recruitmentScreen;
     static SDL_Renderer* renderer;
 	static SDL_Event event;
     static TextManager* textManager;
-
-	//static int currScene;
 
 	static const int tileSize = 64;
 
 private:
 	bool isRunning;
 	SDL_Window* window;
-
     Enums::Scene currScene;
-
-	void updateScene(int menuSelection);
-
+    unordered_map<Enums::Scene, Scene*> scenes;
 };
 
 #endif /* SRC_GAME_H_ */

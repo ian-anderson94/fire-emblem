@@ -1,10 +1,6 @@
 #include "InGame.h"
 
-InGame::InGame(int resX, int resY, int ts) {
-    resolutionX = resX;
-    resolutionY = resY;
-    tileSize = ts;
-
+InGame::InGame(int resX, int resY, int tileSize) : Scene(resX, resY, tileSize) {
     matchStarted = false;
 
     mapManager = new MapManager(tileSize);
@@ -14,13 +10,13 @@ InGame::InGame(int resX, int resY, int ts) {
     selectedActor = nullptr;
     actorUnderCursor = nullptr;
 
-    actionMenu = new ActionMenu({ "Move", "Attack", "Inspect", "End" }, ts);
-    actorManager = new ActorManager(resX, resY, ts);
-    infoPanel = new InformationPanel(resX, resY, ts);
-    pathingManager = new PathingManager(mapManager->GetMap(), ts);
-    viewPort = new ViewPort(resX, resY, ts);
+    actionMenu = new ActionMenu({ "Move", "Attack", "Inspect", "End" }, tileSize);
+    actorManager = new ActorManager(resX, resY, tileSize);
+    infoPanel = new InformationPanel(resX, resY, tileSize);
+    pathingManager = new PathingManager(mapManager->GetMap(), tileSize);
+    viewPort = new ViewPort(resX, resY, tileSize);
     cursor = new GameCursor(tileSize, viewPort->GetPosition().cameraX, viewPort->GetPosition().cameraY);
-    turnManager = new TurnManager(resX, resY, ts);
+    turnManager = new TurnManager(resX, resY, tileSize);
 
     /*
     Actor* testActor1 = new Actor("./assets/PH_warrior.png", "./assets/knight.png", 3, 3, tileSize, Actor::Stats{0, 0, 0, 0, 0, 0, 0, 3});
@@ -37,9 +33,7 @@ InGame::InGame(int resX, int resY, int ts) {
 }
 
 void InGame::StartMatch() {
-    if (!matchStarted) {
-        PlayerAccount* account = PlayerAccount::GetInstance();
-        
+    if (!matchStarted) {        
         actorManager->PopulateFromParty();
         mapManager->SetTilesOccupied(actorManager->GetAllActors());
     }
@@ -48,6 +42,8 @@ void InGame::StartMatch() {
 }
 
 void InGame::Update(double dt) {
+    StartMatch();
+
     GameCursor::Position cursorPos = cursor->GetPosition();
     Tile* tileUnderCursor = mapManager->GetTile(cursorPos.x, cursorPos.y);
     actorUnderCursor = actorManager->GetActor(cursorPos.x, cursorPos.y);
@@ -102,7 +98,7 @@ Enums::Scene InGame::HandleEvents(SDL_Event event) {
             : HandleEnemyTurn(event);
     }
 
-    return Enums::SCENE_InGame;
+    return Enums::SCN_InGame;
 }
 
 void InGame::HandleEnemyTurn(SDL_Event event) {
