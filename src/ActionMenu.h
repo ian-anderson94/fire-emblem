@@ -4,6 +4,7 @@
 #include "Enums.h"
 #include "Position.h"
 #include "SDL2/SDL.h"
+#include "Selector.h"
 #include "TextManager.h"
 #include "TextureManager.h"
 
@@ -23,19 +24,18 @@ class ActionMenu {
         
         void SetActive(bool val) { active = val; currSelection = 0; };
         bool IsActive() { return active; };
-        int GetSelection() { return currSelection; };
+        int GetSelection() { return selector->GetSelectionIndex(); };
 
     private:
         bool active;
         int currSelection, tileSize, x, y, w, h;
         vector<string> menuOptions;
 
+        Selector<string>* selector;
         const char* menuImagePath;
         SDL_Texture* menuTexture;
 
-        void BoundSelection();
-        void RenderMenuOptions(SDL_Renderer* rend);
-        void RenderSelector(SDL_Renderer* rend);
+        Position RenderMenuOptions(SDL_Renderer* rend);
 };
 
 #endif /* SRC_ACTIONMENU_H_ */

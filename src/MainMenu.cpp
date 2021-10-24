@@ -1,23 +1,23 @@
 #include "MainMenu.h"
 #include <iostream>
 
-MainMenu::MainMenu(int resX, int resY, int tileSize, TextManager* textManager) : Scene(resX, resY, tileSize) {
+MainMenu::MainMenu(int resX, int resY, int tileSize) : Scene(resX, resY, tileSize) {
 	screenCenterX = resX / 2;
 	screenCenterY = resY / 2;
 	currSelection = Enums::MMS_GameStart;
 
+    xMenuAnchor = tileSize;
+    yMenuAnchor = tileSize;
+
+    selector = new Selector<Enums::Scene>(sceneVals);
+
     mainMenuTextSize = 60;
-
     selectorVerticalOffset = 0;
-
-    MainMenu::textManager = textManager;
 
     selectorTexture = TextureManager::loadTexture("./assets/selector_arrow.png");
 	selectionsTexture = nullptr;
 
-    const char* menuSelections[] = { "New Game", "Continue", "Options", "Exit" };
-    const Enums::Scene sceneVals[] { Enums::SCN_HubMenu, Enums::SCN_HubMenu, Enums::SCN_HubMenu, Enums::SCN_HubMenu };
-
+    /*
     int buttonWidth = resX / 2;
     int buttonHeight = resY / 8;
     int buttonX = (resX - buttonWidth) / 2;
@@ -40,14 +40,21 @@ MainMenu::MainMenu(int resX, int resY, int tileSize, TextManager* textManager) :
 
         yOffset += yIncrement;
     }
+    */
 }
 
 void MainMenu::Render(SDL_Renderer* rend){
 	//renderMenu(rend);
     //renderSelector(rend);
+
+    /*
     for (auto const& button : buttons) {
         button->Render(rend);
     }
+    */
+
+   Position sPos = RenderMenuSelections(rend);
+   selector->RenderRelativeToSelection(rend, sPos);
 }
 
 void MainMenu::Update(double dt) {
@@ -55,27 +62,47 @@ void MainMenu::Update(double dt) {
 }
 
 Enums::Scene MainMenu::HandleEvents(SDL_Event event) {
-	InputManager* input = InputManager::getInstance();
-	std::unordered_set<int> actions = input->getActionsDown();
+    InputManager* input = InputManager::getInstance();
+	unordered_map<int, bool> actions = input->GetActionMap();
+
+    Enums::Scene menuSelectionValue = Enums::SCN_MainMenu;
+
+    if (actions[Enums::ACTION_Up]) {
+        selector->SetAndBoundCurrSelection(-1);
+    }
+
+    if (actions[Enums::ACTION_Down]) {
+        selector->SetAndBoundCurrSelection(1);
+    }
+
+    if (actions[Enums::ACTION_Select]) {
+        menuSelectionValue = selector->GetSelection();
+    }
+
+    return menuSelectionValue;
 
     /*
-	Enums::Scene menuSelectionValue = Enums::SCN_MainMenu;
+    InputManager* input = InputManager::getInstance();
+    std::unordered_set<int> actions = input->getActionsDown();
 
-	if (Globals::Contains(actions, Enums::ACTION_Up)) {
-		currSelection--;
-        selectorVerticalOffset -= resolutionY / 8;
-		currSelection = boundCurrSelection();
-	}
-	else if (Globals::Contains(actions, Enums::ACTION_Down)) {
-		currSelection++;
-        selectorVerticalOffset += resolutionY / 8;
-		currSelection = boundCurrSelection();
-	}
-	else if (Globals::Contains(actions, Enums::ACTION_Select)) {
-		menuSelectionValue = MapMainMenuSelectionToScene();
-	}
+    Enums::Scene menuSelectionValue = Enums::SCN_MainMenu;
+
+    if (Globals::Contains(actions, Enums::ACTION_Up)) {
+        currSelection--;
+        selectorVerticalOffset -= resY / 8;
+        currSelection = boundCurrSelection();
+    }
+    else if (Globals::Contains(actions, Enums::ACTION_Down)) {
+        currSelection++;
+        selectorVerticalOffset += resY / 8;
+        currSelection = boundCurrSelection();
+    }
+    else if (Globals::Contains(actions, Enums::ACTION_Select)) {
+        menuSelectionValue = MapMainMenuSelectionToScene();
+    }
     */
 
+    /*
     for (auto const& button : buttons) {
         Enums::Scene menuSelection = button->HandleEvents(event);
         if (menuSelection != Enums::SCN_NULL) {
@@ -83,7 +110,10 @@ Enums::Scene MainMenu::HandleEvents(SDL_Event event) {
         }
     }
 
-	return Enums::SCN_MainMenu;
+    return Enums::SCN_MainMenu;
+    */
+
+    //return menuSelectionValue;
 }
 
 Enums::Scene MainMenu::MapMainMenuSelectionToScene() {
@@ -98,9 +128,28 @@ Enums::Scene MainMenu::MapMainMenuSelectionToScene() {
     return scene;
 }
 
+Position MainMenu::RenderMenuSelections(SDL_Renderer* rend) {
+    Position sPos;
+    int yOffset = 0;
+    int mx = xMenuAnchor + (tileSize / 2);
+
+    for (int i = 0; i < (int) menuSelections.size(); i++) {
+        Position tPos = TextManager::LoadFontAndPrint(rend, menuSelections[i].c_str(), mx, yMenuAnchor + yOffset);
+
+        if (selector->GetSelectionIndex() == i) {
+            sPos.x = xMenuAnchor - (tileSize / 2);
+            sPos.y = yMenuAnchor + yOffset;
+            sPos.w = tPos.h;
+            sPos.h = tPos.h;
+        }
+
+        yOffset += tileSize / 2;
+    }
+
+    return sPos;
+}
+
 void MainMenu::renderMenu(SDL_Renderer* rend) {
-    SDL_Color white = { 255, 255, 255 };
-    const char* fontFile = "fonts/OpenSans-Regular.ttf";
     const char* menuOptions[] = { "GAME START", "OPTIONS", "EXIT" };
     int verticalOffset = 0, x = 0, y = 0, w = 0, h = 0;
 
@@ -112,7 +161,7 @@ void MainMenu::renderMenu(SDL_Renderer* rend) {
 
         verticalOffset += h;
 
-        textManager->LoadFontAndPrint(fontFile, mainMenuTextSize, menuOptions[index], white, x, y, w, h, rend);
+        TextManager::LoadFontAndPrint(rend, menuOptions[index], x, y);
     }
 }
 

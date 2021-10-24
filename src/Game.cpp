@@ -50,7 +50,7 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
     int xResolution = resolutionManager->GetFlag(Enums::CLF_xResolution);
     int yResolution = resolutionManager->GetFlag(Enums::CLF_yResolution);
 
-    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_MainMenu, new MainMenu(xResolution, yResolution, tileSize, textManager)));
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_MainMenu, new MainMenu(xResolution, yResolution, tileSize)));
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubMenu, new HubScreen(xResolution, yResolution, tileSize)));
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubRecruitment, new RecruitmentScreen(xResolution, yResolution, tileSize)));
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_InGame, new InGame(xResolution, yResolution, tileSize)));
