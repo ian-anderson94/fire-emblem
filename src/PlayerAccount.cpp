@@ -3,6 +3,7 @@
 PlayerAccount* PlayerAccount::instance = nullptr;
 
 PlayerAccount::PlayerAccount() {
+    activeQuest = nullptr;
     maxPartySize = 4;
 }
 

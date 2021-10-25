@@ -16,8 +16,6 @@ class TextManager {
     public:
         static Position SizeListOfText(vector<string> vec);
         static Position LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, int y);
-        //static void LoadFontAndPrint(SDL_Renderer* rend, const char* text, int x, int y, int w, int h);
-        //static void LoadFontAndPrint(const char* fontFile, int fontSize, const char* text, SDL_Color color, int x, int y, int w, int h, SDL_Renderer* rend);
 
     private:
         static const int fontSize;

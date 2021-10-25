@@ -25,6 +25,7 @@ class HubScreen : public Scene {
 
         const char* recruitmentImagePath;
         const char* embarkImagePath;
+        const char* questBoardImagePath;
 
         unordered_map<Enums::HubSelection, SDL_Texture*> selectionTextures;
 

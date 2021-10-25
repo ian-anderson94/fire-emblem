@@ -128,6 +128,7 @@ Enums::Scene MainMenu::MapMainMenuSelectionToScene() {
     return scene;
 }
 
+// Returns a position for the selector based on current selected option
 Position MainMenu::RenderMenuSelections(SDL_Renderer* rend) {
     Position sPos;
     int yOffset = 0;

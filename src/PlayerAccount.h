@@ -2,6 +2,7 @@
 #define SRC_PLAYERACCOUNT_H_
 
 #include "Actor.h"
+#include "Quest.h"
 
 #include <algorithm>
 #include <vector>
@@ -22,11 +23,16 @@ class PlayerAccount {
         void RemoveFromRoster(Actor* actor) { roster.erase(remove(roster.begin(), roster.end(), actor), roster.end()); };
         void RemoveFromParty(Actor* actor) { party.erase(remove(party.begin(), party.end(), actor), party.end()); };
 
+        void SetActiveQuest(Quest* quest) { activeQuest = quest; };
+        Quest* GetActiveQuest() { return activeQuest; };
+
     private:
         static PlayerAccount* instance;
         vector<Actor*> roster;
         vector<Actor*> party;
         int maxPartySize;
+
+        Quest* activeQuest;
 };
 
 #endif /* SRC_PLAYERACCOUNT_H_ */

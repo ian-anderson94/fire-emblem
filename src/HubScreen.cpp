@@ -4,9 +4,11 @@ HubScreen::HubScreen(int resX, int resY, int tileSize) : Scene(resX, resY, tileS
     currSelection = Enums::HUB_Embark;
     recruitmentImagePath = "./assets/PH_house.png";
     embarkImagePath = "./assets/embark.png";
+    questBoardImagePath = "./assets/PH_shop.png";
 
     selectionTextures.insert(pair<Enums::HubSelection, SDL_Texture*>(Enums::HUB_Recruitment, TextureManager::loadTexture(recruitmentImagePath)));
     selectionTextures.insert(pair<Enums::HubSelection, SDL_Texture*>(Enums::HUB_Embark, TextureManager::loadTexture(embarkImagePath)));
+    selectionTextures.insert(pair<Enums::HubSelection, SDL_Texture*>(Enums::HUB_QuestBoard, TextureManager::loadTexture(questBoardImagePath)));
 
 }
 
@@ -56,6 +58,9 @@ Enums::Scene HubScreen::HandleEvents(SDL_Event event) {
             case Enums::HUB_Recruitment:
                 sceneSelection = Enums::SCN_HubRecruitment;
                 break;
+            case Enums::HUB_QuestBoard:
+                sceneSelection = Enums::SCN_HubQuestBoard;
+                break;
         }
 
         //sceneSelection = MapHubSelectionToScene();
@@ -70,6 +75,7 @@ Enums::Scene HubScreen::MapHubSelectionToScene() {
     switch (currSelection) {
         case Enums::HUB_Recruitment: scene = Enums::SCN_HubRecruitment; break;
         case Enums::HUB_Embark: scene = Enums::SCN_InGame; break;
+        case Enums::HUB_QuestBoard: scene = Enums::SCN_HubQuestBoard; break;
     }
 
     return scene;

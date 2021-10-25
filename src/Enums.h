@@ -27,6 +27,12 @@ public:
         AMR_Cancel,
     };
 
+    enum Biome {
+        BIO_Graveyard,
+        BIO_Forest,
+        BIO_Tomb,
+    };
+
     enum ClassType {
         CLS_Warrior,
         CLS_Paladin,
@@ -57,7 +63,8 @@ public:
         HUB_Shop,
         HUB_Graveyard,
         */
-        HUB_Embark
+        HUB_QuestBoard,
+        HUB_Embark,
     };
 
     enum InfoPanelLocation {
@@ -76,6 +83,17 @@ public:
 		MMS_End
 	};
 
+    enum QuestDifficulty {
+        QDF_Easy,
+        QDF_Medium,
+        QDF_Hard,
+    };
+
+    enum QuestType {
+        QST_Elimination,
+        QST_Exploration,
+    };
+
 	enum Scene {
 		SCN_MainMenu,
 		SCN_InGame,
@@ -83,6 +101,7 @@ public:
 		SCN_PauseMenu,
         SCN_HubMenu,
         SCN_HubRecruitment,
+        SCN_HubQuestBoard,
         SCN_NULL
 	};
 

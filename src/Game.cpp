@@ -54,6 +54,7 @@ void Game::init(const char* title, ResolutionManager* resolutionManager) {
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubMenu, new HubScreen(xResolution, yResolution, tileSize)));
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubRecruitment, new RecruitmentScreen(xResolution, yResolution, tileSize)));
     scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_InGame, new InGame(xResolution, yResolution, tileSize)));
+    scenes.insert(pair<Enums::Scene, Scene*>(Enums::SCN_HubQuestBoard, new QuestBoard(xResolution, yResolution, tileSize)));
 
     Game::background = new Background(xResolution, yResolution);
     Game::textManager = new TextManager();

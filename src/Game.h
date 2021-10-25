@@ -11,6 +11,7 @@
 #include "InGame.h"
 #include "InputManager.h"
 #include "MainMenu.h"
+#include "QuestBoard.h"
 #include "RecruitmentScreen.h"
 #include "ResolutionManager.h"
 #include "Scene.h"
