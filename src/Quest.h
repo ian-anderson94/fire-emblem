@@ -17,14 +17,17 @@ class Quest {
         Enums::QuestType GetType() { return type; };
         Enums::Biome GetBiome() { return biome; };
         string GetTitle() { return title; };
+        string GetMapFilePath() { return mapFilePath; };
 
     private:
         vector<Item*> rewards;
         Enums::QuestDifficulty difficulty;
         Enums::QuestType type;
         Enums::Biome biome;
+        string mapFilePath;
         string title;
         
+        void GenerateMapFilePath();
         void GenerateTitle();
         void GenerateRewards();
 };

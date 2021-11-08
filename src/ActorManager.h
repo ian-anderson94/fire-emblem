@@ -19,7 +19,7 @@ class ActorManager {
 
         bool AnyActorsMoving();
 
-        void PopulateFromParty();
+        void PopulateFromParty(vector<pair<int, int>> playerSpawns);
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);
         unordered_set<Actor*> GetAllActors() { return actors; };

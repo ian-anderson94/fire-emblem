@@ -1,6 +1,7 @@
 #include "Map.h"
 
-Map::Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> tileDefs, int size) {
+Map::Map(vector<vector<string>> layout, vector<pair<int, int>> playerSpawns, unordered_map<string, TileDefinition*> tileDefs, int size) {
+    this->playerSpawns = playerSpawns;
     tileLayout = layout;
     tileDefinitions = tileDefs;
     tileSize = size;

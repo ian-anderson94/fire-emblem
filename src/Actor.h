@@ -43,6 +43,7 @@ class Actor {
         bool ActionsAvailable();
         string GetName() { return name; };
         int GetLevel() { return level; };
+        unordered_map<Enums::TurnAction, bool> GetActionsAvailable() { return actionsAvailable; };
         void ResetAvailableActions();
         void UseAction(Enums::TurnAction action) { actionsAvailable[action] = false; };
         void SetSelected(bool val) { selected = val; };

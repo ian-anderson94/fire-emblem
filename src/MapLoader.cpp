@@ -11,13 +11,14 @@ const std::string mov = "mov";
 MapLoader::MapLoader(int size) {
     tileSize = size;
 
-    reservedLabels = { "layout" };
+    reservedLabels = { "layout", "playerSpawns" };
     baseAssetPath = "./assets/";
 }
 
 Map* MapLoader::Load(const char* file) {
     unordered_map<string, vector<string>> groups = LoadAndParseFileIntoGroups(file);
     vector<vector<string>> layout = ParseLayout(groups["layout"]);
+    vector<pair<int, int>> playerSpawns = ParsePlayerSpawns(groups["playerSpawns"]);
 
     unordered_map<string, TileDefinition*> tileDefinitions;
     for (auto const& kvp : groups) {
@@ -28,7 +29,7 @@ Map* MapLoader::Load(const char* file) {
         }
     }
 
-    Map* map = new Map(layout, tileDefinitions, tileSize);
+    Map* map = new Map(layout, playerSpawns, tileDefinitions, tileSize);
 
     return map;
 }
@@ -79,6 +80,22 @@ vector<vector<string>> MapLoader::ParseLayout(vector<string> layout) {
     }
 
     return charLayout;
+}
+
+vector<pair<int, int>> MapLoader::ParsePlayerSpawns(vector<string> playerSpawns) {
+    vector<pair<int, int>> spawnCoords;
+    smatch matches;
+    regex pattern("([0-9]+),([0-9]+)");
+
+    for (auto const& row : playerSpawns) {
+        if (!regex_search(row, matches, pattern)) {
+            throw invalid_argument("player spawns not properly formatted");
+        }
+
+        spawnCoords.push_back(make_pair(stoi(matches.str(1)), stoi(matches.str(2))));
+    }
+
+    return spawnCoords;
 }
 
 // Parse a Stats object from provided attribute string. Formatted as [attr1, attr3, attr-2, etc]

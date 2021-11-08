@@ -1,0 +1,77 @@
+empty {
+    symbol=.
+    image=PH_grass2
+    passable=true
+    attributes=[]
+}
+
+tombstone {
+    symbol=t
+    image=PH_gravestone
+    passable=true
+    attributes=[def 1, mov -1]
+}
+
+topleftcorner {
+    symbol=p
+    image=PH_topleft_wall
+    passable=false
+    attributes=[]
+}
+
+toprightcorner {
+    symbol=q
+    image=PH_topright_wall
+    passable=false
+    attributes=[]
+}
+
+bottomrightcorner {
+    symbol=d
+    image=PH_bottomright_wall
+    passable=false
+    attributes=[]
+}
+
+bottomleftcorner {
+    symbol=b
+    image=PH_bottomleft_wall
+    passable=false
+    attributes=[]
+}
+
+verticalwall {
+    symbol=|
+    image=PH_vertical_wall1
+    passable=false
+    attributes=[]
+}
+
+horizontalwall {
+    symbol=-
+    image=PH_horizontal_wall1
+    passable=false
+    attributes=[]
+}
+
+playerSpawns {
+    (8,11)
+    (9,11)
+    (10,11)
+    (11,11)
+}
+
+layout {
+    p------------------q
+    |...tttt....tttt...|
+    |..................|
+    |...tttt....tttt...|
+    |..................|
+    |...tttt....tttt...|
+    |..................|
+    |...tttt....tttt...|
+    |..................|
+    |...tttt....tttt...|
+    |..................|
+    b-------....-------d
+}

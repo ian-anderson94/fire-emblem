@@ -22,15 +22,17 @@ class Map {
             int w, h;
         };
 
-        Map(vector<vector<string>> layout, unordered_map<string, TileDefinition*> tileDefinitions, int size);
+        Map(vector<vector<string>> layout, vector<pair<int, int>> playerSpawns, unordered_map<string, TileDefinition*> tileDefinitions, int size);
         void SetTilesUnoccupied();
         vector<Tile*> GetTilesInViewport(int xOffset, int yOffset, int wTiles, int hTiles, int camX, int camY);
         Tile* GetTile(int xPos, int yPos);
         vector<vector<string>> GetLayout() { return tileLayout; };
+        vector<pair<int, int>> GetPlayerSpawns() { return playerSpawns; };
         Dimensions GetMapSize() { return Dimensions{ (int)tileLayout[1].size(), (int)tileLayout.size()}; };
 
     private:
         int tileSize;
+        vector<pair<int, int>> playerSpawns;
         vector<vector<string>> tileLayout;
         unordered_map<string, TileDefinition*> tileDefinitions;
 

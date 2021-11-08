@@ -6,6 +6,7 @@
 #include "MapLoader.h"
 
 #include <unordered_set>
+#include <utility>
 
 class MapManager {
     public:
@@ -15,6 +16,8 @@ class MapManager {
         void SetTilesOccupied(unordered_set<Actor*> actors);
         void SetTilesOccupied(Actor* actor);
         Map::Dimensions GetMapSize() { return map->GetMapSize(); };
+        vector<pair<int, int>> GetPlayerSpawns() { return map->GetPlayerSpawns(); };
+
         Tile* GetTile(int xPos, int yPos) { return map->GetTile(xPos, yPos); };
         Map* GetMap() { return map; };
 

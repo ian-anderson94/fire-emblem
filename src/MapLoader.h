@@ -16,6 +16,7 @@
 #include <utility>
 #include <regex>
 #include <tuple>
+#include <utility>
 
 using namespace std;
 
@@ -28,6 +29,7 @@ class MapLoader {
         unordered_map<string, vector<string>> LoadAndParseFileIntoGroups(const char* file);
         TileDefinition* CreateTileDefinitionFromGroup(string label, vector<string> definition);
         vector<vector<string>> ParseLayout(vector<string> layout);
+        vector<pair<int, int>> ParsePlayerSpawns(vector<string> playerSpawns);
         Stats ParseStats(string attributes);
 
         vector<string> reservedLabels;

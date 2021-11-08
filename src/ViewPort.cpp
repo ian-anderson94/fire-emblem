@@ -18,7 +18,7 @@ ViewPort::ViewPort(int resX, int resY, int ts) {
     x = (resolutionX - w) / 2;
     y = (resolutionY - h) / 2;
 
-    cameraX = cameraY = 1;
+    cameraX = cameraY = 0;
 }
 
 void ViewPort::Render(SDL_Renderer* rend) {

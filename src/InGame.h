@@ -50,10 +50,7 @@ class InGame : public Scene {
         void EndMatch() { matchStarted = false; };
         void StartMatch();
         void EndTurn();
-        void MoveCursorUp();
-        void MoveCursorDown();
-        void MoveCursorLeft();
-        void MoveCursorRight();
+        void MoveCursor(int dx, int dy);
 };
 
 #endif /* SRC_INGAME_H_ */

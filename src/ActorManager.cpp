@@ -84,14 +84,13 @@ bool ActorManager::AnyActorsMoving() {
     return anyMoving;
 }
 
-void ActorManager::PopulateFromParty() {
+void ActorManager::PopulateFromParty(vector<pair<int, int>> playerSpawns) {
     PlayerAccount* account = PlayerAccount::GetInstance();
-
-    int startX = 0, startY = 0;
+    int index = 0;
 
     for (auto& actor : account->GetParty()) {
-        actor->SetPosition(startX, startY);
+        actor->SetPosition(playerSpawns[index].first, playerSpawns[index].second);
         actors.insert(actor);
-        startX++;
+        index++;
     }
 }
