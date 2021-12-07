@@ -22,7 +22,7 @@ class QuestBoard : public Scene {
         Enums::Scene HandleEvents(SDL_Event event);
 
     private:
-        void GenerateQuests(int numQuests);
+        void GenerateQuests(int tileSize, int numQuests);
         void RenderActiveQuest(SDL_Renderer* rend);
         Position RenderAvailableQuests(SDL_Renderer* rend);
 

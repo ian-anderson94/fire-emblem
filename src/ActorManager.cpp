@@ -94,3 +94,13 @@ void ActorManager::PopulateFromParty(vector<pair<int, int>> playerSpawns) {
         index++;
     }
 }
+
+// Rework this to allow enemies to spawn on later turns - or just call this on startup and check blueprint again later?
+void ActorManager::PopulateEnemiesFromQuestBlueprint(vector<pair<Enums::EnemyType, int>> blueprint, Map* map) {
+    for (auto const& kvp : blueprint) {
+        if (kvp.second == 0) {
+            cout << "adding enemy" << endl;
+            Add(ClassDefinitions::CreateEnemyFromEnum(kvp.first, tileSize, 0, map, GetPlayerControlled(), GridLocation {1, 1}));
+        }
+    }
+}

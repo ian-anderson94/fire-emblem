@@ -56,6 +56,11 @@ public:
         DIR_Right
     };
 
+    enum EnemyType {
+        ENM_Skeleton,
+        ENM_Zombie
+    };
+
     enum HubSelection {
         HUB_Recruitment,
         /*

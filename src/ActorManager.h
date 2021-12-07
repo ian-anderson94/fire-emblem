@@ -2,6 +2,7 @@
 #define SRC_ACTORMANAGER_H_
 
 #include "Actor.h"
+#include "GridLocation.h"
 #include "Map.h"
 #include "PlayerAccount.h"
 #include "SDL2/SDL.h"
@@ -19,6 +20,7 @@ class ActorManager {
 
         bool AnyActorsMoving();
 
+        void PopulateEnemiesFromQuestBlueprint(vector<pair<Enums::EnemyType, int>> blueprint, Map* map);
         void PopulateFromParty(vector<pair<int, int>> playerSpawns);
         void Add(Actor* actor) { actors.insert(actor); };
         Actor* GetActor(int xPos, int yPos);

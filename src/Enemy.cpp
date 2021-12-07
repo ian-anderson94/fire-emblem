@@ -1,11 +1,12 @@
 #include "Enemy.h"
 
-Enemy::Enemy(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats, 
-    Map* map, AIParadigm* paradigm, vector<Actor*> actors) 
+Enemy::Enemy(const char* image, const char* icon, int xPos, int yPos, int ts, Stats actorStats,
+    Map* map, AIParadigm* paradigm, vector<Actor*> actors, int spawnTurn) 
     : Actor(image, icon, xPos, yPos, ts, actorStats) {
         this->map = map;
         this->paradigm = paradigm;
         this->actors = actors;
+        this->spawnTurn = spawnTurn;
 
         playerControlled = false;
         pathingManager = new PathingManager(map, ts);

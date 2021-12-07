@@ -89,3 +89,48 @@ Actor* ClassDefinitions::CreatePriest(int tileSize) {
         }
     );    
 }
+
+Enemy* ClassDefinitions::CreateEnemyFromEnum(Enums::EnemyType type, int tileSize, int spawnTurn, Map* map, vector<Actor*> actors, GridLocation coords) {
+    Enemy* enemy = nullptr;
+    
+    switch (type) {
+        case Enums::ENM_Skeleton: enemy = ClassDefinitions::CreateSkeleton(tileSize, spawnTurn, map, actors, coords); break;
+        case Enums::ENM_Zombie: enemy = ClassDefinitions::CreateZombie(tileSize, spawnTurn, map, actors, coords); break;
+    }
+
+    return enemy;
+}
+
+Enemy* ClassDefinitions::CreateSkeleton(int tileSize, int spawnTurn, Map* map, vector<Actor*> actors, GridLocation coords) {
+    return new Enemy(
+      "./assets/PH_rogue.png",
+      "./assets/PH_rogue.png",
+      coords.x,
+      coords.y,
+      tileSize,
+      Actor::Stats {
+          2, 2, 2, 2, 2, 2, 2, 2
+      },
+      map,
+      new BasicAI(),
+      actors,
+      spawnTurn  
+    );
+}
+
+Enemy* ClassDefinitions::CreateZombie(int tileSize, int spawnTurn, Map* map, vector<Actor*> actors, GridLocation coords) {
+    return new Enemy(
+      "./assets/PH_warrior.png",
+      "./assets/PH_warrior.png",
+      coords.x,
+      coords.y,
+      tileSize,
+      Actor::Stats {
+          3, 3, 3, 3, 3, 3, 2, 2
+      },
+      map,
+      new BasicAI(),
+      actors,
+      spawnTurn  
+    );
+}

@@ -26,6 +26,7 @@ void InGame::StartMatch() {
         mapManager->LoadMapFromFile(account->GetActiveQuest()->GetMapFilePath().c_str());
         pathingManager = new PathingManager(mapManager->GetMap(), tileSize);      
         actorManager->PopulateFromParty(mapManager->GetPlayerSpawns());
+        actorManager->PopulateEnemiesFromQuestBlueprint(account->GetActiveQuest()->GetEnemyBlueprint(), mapManager->GetMap());
         mapManager->SetTilesOccupied(actorManager->GetAllActors());
     }
 

@@ -5,7 +5,7 @@ QuestBoard::QuestBoard(int resX, int resY, int tileSize) : Scene(resX, resY, til
     yAnchor = 2 * tileSize;
     activeQuest = nullptr;
     maxQuestsAvailable = 4;
-    GenerateQuests(maxQuestsAvailable);
+    GenerateQuests(tileSize, maxQuestsAvailable);
     selector = new Selector<Quest*>(questsAvailable);
 }
 
@@ -78,11 +78,11 @@ Enums::Scene QuestBoard::HandleEvents(SDL_Event event) {
     return currScene;
 }
 
-void QuestBoard::GenerateQuests(int numQuests) {
-    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard));
-    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard));
-    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard));
-    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard));
+void QuestBoard::GenerateQuests(int tileSize, int numQuests) {
+    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard, tileSize));
+    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard, tileSize));
+    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard, tileSize));
+    questsAvailable.push_back(new Quest(Enums::QST_Elimination, Enums::QDF_Easy, Enums::BIO_Graveyard, tileSize));
 
     for (int i = 0; i < questsAvailable.size(); i++) {
         questTitles.push_back(questsAvailable[i]->GetTitle());
